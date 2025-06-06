@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import ModulesGrid from "@/components/home/ModulesGrid"
 import Footer from "@/components/home/Footer"
 import HomeHeader from "@/components/home/HomeHeader"
@@ -9,7 +9,9 @@ import { experiments } from "@/lib/database"
 import { getCourses } from "@/lib/courses"
 import { HeroBanner } from "@/components/home/HeroBanner"
 import Link from "next/link"
-import { BookOpen, FileText, BarChart3, Globe, ArrowRight } from "lucide-react"
+import { BookOpen, FileText, BarChart3, Globe, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 // 获取模块背景样式
 const getModuleBgClass = (module: string) => {
@@ -85,9 +87,78 @@ const getModuleButtonClass = (module: string) => {
   }
 };
 
+// 政策法规轮播数据
+const policySlides = [
+  {
+    id: 1,
+    image: "/中国碳市场大会.webp",
+    title: "2024中国碳市场大会在汉开幕",
+    description: "以\"深化碳市场交流合作，应对全球气候变化\"为主题。会上正式发布《全国碳市场发展报告（2024）》。"
+  },
+  {
+    id: 2,
+    image: "/国务院发布《碳排放权交易管理暂行条例》.webp",
+    title: "国务院发布《碳排放权交易管理暂行条例》",
+    description: "我国首部应对气候变化专门行政法规，构建全国碳市场法律框架，规范配额分配、交易、核查及数据管理，明确对数据造假行为的严惩措施。"
+  },
+  {
+    id: 3,
+    image: "/碳关税政策解读.webp",
+    title: "碳关税政策解读",
+    description: "2022年12月13日，欧盟理事会和欧洲议会经过第四次三方协商就碳边境调节机制（CBAM）法规的最终文本达成临时协议，将于2026年开始全面起征。"
+  }
+]
+
+// 公开文章数据
+const articles = [
+  {
+    id: 1,
+    title: "碳市场交易机制创新研究",
+    date: "2024-03-15",
+    url: "/articles/carbon-market-innovation"
+  },
+  {
+    id: 2,
+    title: "企业碳资产管理实践指南",
+    date: "2024-03-10",
+    url: "/articles/carbon-asset-management"
+  },
+  {
+    id: 3,
+    title: "碳金融产品创新与发展趋势",
+    date: "2024-03-05",
+    url: "/articles/carbon-finance-trends"
+  }
+]
+
+// 公开数据
+const datasets = [
+  {
+    id: 1,
+    title: "中国统计年鉴（国家统计局）",
+    updateTime: "2024-03-15",
+    url: "https://www.stats.gov.cn/sj/ndsj/"
+  },
+  {
+    id: 2,
+    title: "中国碳核算数据库",
+    updateTime: "2024-03-10",
+    url: "https://www.ceads.net.cn/"
+  },
+  {
+    id: 3,
+    title: "碳价指数分析报告",
+    updateTime: "2024-03-05",
+    url: "/data/carbon-price-index"
+  }
+]
+
 export default function Home() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
     const mobileMenuButton = document.getElementById("mobile-menu-button")
@@ -132,67 +203,184 @@ export default function Home() {
     }
 
     fetchCourses();
-  }, [])
+
+    // 自动轮播
+    if (!isHovering) {
+      timerRef.current = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % policySlides.length)
+      }, 5000)
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [isHovering])
+
+  // 手动切换轮播
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + policySlides.length) % policySlides.length)
+  }
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % policySlides.length)
+  }
+
+  const handleSlideClick = () => {
+    switch (currentSlide) {
+      case 0:
+        window.open('https://www.wucea.com/news/5228.html', '_blank', 'noopener,noreferrer');
+        break;
+      case 1:
+        window.open('https://mp.weixin.qq.com/s/M5QtJCSOg8dHemzRYu_mJQ', '_blank', 'noopener,noreferrer');
+        break;
+      case 2:
+        window.open('https://ofdi.sww.sh.gov.cn/zcfg/19826.jhtml', '_blank', 'noopener,noreferrer');
+        break;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <HomeHeader />
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-20 py-12">
         <HeroBanner />
 
-        <section id="consulting" className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">碳经济咨询</h2>
-          <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-semibold mb-4 text-gray-800">碳经济信息中心</h3>
-              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                汇聚最新的碳经济政策法规、权威研究文章和公开数据资源，为您提供全面、及时、准确的碳经济信息服务，助力双碳目标实现。
-              </p>
+        {/* 碳经济资讯 */}
+        <section id="consulting" className="py-9 bg-gray-50">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">碳经济资讯</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* 左侧：政策法规轮播 */}
+            <div className="lg:col-span-3 space-y-4">
+              <div className="relative">
+                <div 
+                  className="relative h-[400px] rounded-lg overflow-hidden"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  {policySlides.map((slide, index) => (
+                    <div
+                      key={slide.id}
+                      className={`absolute inset-0 transition-opacity duration-500 ${
+                        index === currentSlide ? "opacity-100" : "opacity-0"
+                      }`}
+                      onClick={handleSlideClick}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img
+                        src={slide.image}
+                        alt={slide.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-4">
+                        <h3 className="text-lg font-semibold mb-2">{slide.title}</h3>
+                        <p className="text-sm">{slide.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+                  onClick={handlePrevSlide}
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+                  onClick={handleNextSlide}
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+              </div>
+              {/* 底部切换栏 - 移到图片外部 */}
+              <div className="flex justify-center space-x-2 mt-2">
+                {policySlides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`h-1 transition-all duration-300 ${
+                      index === currentSlide ? "w-8 bg-gray-800" : "w-4 bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-8 w-8 text-blue-600" />
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">政策法规</h4>
-                <p className="text-gray-600 text-sm">国家和地方层面的碳经济相关政策法规文件，及时跟踪政策动态</p>
+
+            {/* 右侧：公开文章和公开数据 */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* 公开文章 */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">公开文章</h3>
+                <Card className="p-3">
+                  <div className="space-y-2">
+                    {articles.slice(0, 2).map((article) => (
+                      <a
+                        key={article.id}
+                        href={article.url}
+                        className="block py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-gray-800 font-medium text-sm">{article.title}</h4>
+                          <span className="text-xs text-gray-500">{article.date}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <Link
+                      href="/articles"
+                      className="flex items-center justify-center text-blue-600 hover:text-blue-800 transition-colors text-sm"
+                    >
+                      <span>查看更多文章</span>
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Link>
+                  </div>
+                </Card>
               </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-100">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Globe className="h-8 w-8 text-green-600" />
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">公开文章</h4>
-                <p className="text-gray-600 text-sm">权威机构发布的碳经济研究文章和报告，深度解读行业趋势</p>
+
+              {/* 公开数据 */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">公开数据</h3>
+                <Card className="p-3">
+                  <div className="space-y-2">
+                    {datasets.slice(0, 2).map((dataset) => (
+                      <a
+                        key={dataset.id}
+                        href={dataset.url}
+                        className="block py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-gray-800 font-medium text-sm">{dataset.title}</h4>
+                          <span className="text-xs text-gray-500">更新：{dataset.updateTime}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <Link
+                      href="/datasets"
+                      className="flex items-center justify-center text-blue-600 hover:text-blue-800 transition-colors text-sm"
+                    >
+                      <span>查看更多数据</span>
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Link>
+                  </div>
+                </Card>
               </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg border border-purple-100">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="h-8 w-8 text-purple-600" />
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">公开数据</h4>
-                <p className="text-gray-600 text-sm">碳经济相关的公开数据集和统计资料，支持研究和决策分析</p>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <Link 
-                href="/consulting"
-                className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 transform hover:scale-105 hover:shadow-lg"
-              >
-                <span>探索碳经济咨询</span>
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Link>
             </div>
           </div>
         </section>
 
         <ModulesGrid />
 
-        <section id="courses" className="mb-12">
+        <section id="courses" className="mb-9">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">热门课程</h2>
           <p className="mb-8 text-gray-600">探索我们平台上的精选课程，每个课程都包含了系统化的学习路径和丰富的实践内容，帮助您从零开始掌握碳经济相关知识。</p>
           
@@ -212,7 +400,7 @@ export default function Home() {
           )}
         </section>
 
-        <section id="experiments" className="mb-12">
+        <section id="experiments" className="mb-9">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">热门实验</h2>
           <p className="mb-8 text-gray-600">探索我们平台上的精选模拟实验，每个实验都提供了交互控制，让您能够调整参数，观察变化。更多实验可在各领域模块页面中找到。</p>
           
@@ -264,7 +452,7 @@ export default function Home() {
         </section>
 
         {/* 关于平台 */}   
-        <section id="about" className="mb-12">
+        <section id="about" className="mb-9">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">关于平台</h2>
           <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
             <div className="md:flex items-stretch gap-8">

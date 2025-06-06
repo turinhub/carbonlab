@@ -226,7 +226,7 @@ export function ReportStep({
           {/* 各类别排放量和排放结构分析 */}
           <div className="mb-8">
             <h3 className="text-md font-medium mb-4">各类别排放量和排放结构分析</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 饼图 */}
               <div className="bg-white p-4 rounded-lg shadow">
                 <h4 className="text-md font-medium mb-3 text-gray-700">排放结构分布</h4>
@@ -261,7 +261,7 @@ export function ReportStep({
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+                  </div>
 
               {/* 分栏展示图 */}
               <div className="bg-white p-4 rounded-lg shadow">

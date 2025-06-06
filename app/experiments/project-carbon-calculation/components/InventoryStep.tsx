@@ -124,7 +124,7 @@ export function InventoryStep({
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">m³</td>
                   <td className="border border-gray-300 px-4 py-2 text-center font-mono">155.28</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    <td className="border border-gray-300 px-4 py-2 text-center">
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -133,8 +133,8 @@ export function InventoryStep({
                     >
                       <ImageIcon className="w-6 h-6" />
                     </Button>
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
               </tbody>
             </table>
           </div>
@@ -169,7 +169,7 @@ export function InventoryStep({
               </tbody>
             </table>
           </div>
-
+          
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-blue-800 text-sm">
               <strong>说明：</strong>以上工程量清单为实验教学数据，基于真实项目案例整理。在实际项目中，工程量清单应根据设计图纸和现场勘察结果进行详细计算。

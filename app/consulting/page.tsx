@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ArrowLeft, FileText, BarChart3, Globe, Calendar, ExternalLink, Search } from "lucide-react"
+import { ArrowLeft, FileText, BarChart3, Globe, Calendar, ExternalLink, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 // 模拟数据
 const policies = [
@@ -37,6 +39,28 @@ const policies = [
     date: "2022-07-28",
     summary: "上海市碳达峰行动的时间表、路线图和施工图。",
     url: "#"
+  }
+]
+
+// 政策法规轮播数据
+const policySlides = [
+  {
+    id: 1,
+    image: "/policies/policy-1.webp",
+    title: "全国碳市场建设方案",
+    description: "深化全国碳市场建设，完善碳排放权交易制度"
+  },
+  {
+    id: 2,
+    image: "/policies/policy-2.webp",
+    title: "碳达峰碳中和标准体系建设指南",
+    description: "建立健全碳达峰碳中和标准体系，支撑双碳目标实现"
+  },
+  {
+    id: 3,
+    image: "/policies/policy-3.webp",
+    title: "碳关税政策解读",
+    description: "欧盟碳边境调节机制（CBAM）对中国企业的影响分析"
   }
 ]
 
@@ -121,6 +145,8 @@ const datasets = [
 export default function ConsultingPage() {
   const [activeTab, setActiveTab] = useState("policies")
   const [searchTerm, setSearchTerm] = useState("")
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const getLevelColor = (level: string) => {
     return level === "国家级" ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
@@ -134,6 +160,28 @@ export default function ConsultingPage() {
       "研究报告": "bg-orange-100 text-orange-800"
     }
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  }
+
+  // 自动轮播
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % policySlides.length)
+    }, 5000)
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [])
+
+  // 手动切换轮播
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + policySlides.length) % policySlides.length)
+  }
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % policySlides.length)
   }
 
   return (
@@ -151,7 +199,7 @@ export default function ConsultingPage() {
                 返回首页
               </Link>
               <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-2xl font-bold text-gray-900">碳经济咨询</h1>
+              <h1 className="text-2xl font-bold text-gray-900">碳经济资讯</h1>
             </div>
           </div>
         </div>
@@ -231,32 +279,43 @@ export default function ConsultingPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">政策法规</h3>
                   <p className="text-gray-600">国家和地方层面的碳经济相关政策法规文件</p>
                 </div>
-                <div className="grid gap-6">
-                  {policies.map((policy) => (
-                    <div key={policy.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="text-lg font-semibold text-gray-900 flex-1">{policy.title}</h4>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(policy.level)}`}>
-                            {policy.level}
-                          </span>
-                          <a 
-                            href={policy.url}
-                            className="text-blue-600 hover:text-blue-800 transition-colors"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
+                <div className="relative">
+                  <div className="relative h-[400px] rounded-lg overflow-hidden">
+                    {policySlides.map((slide, index) => (
+                      <div
+                        key={slide.id}
+                        className={`absolute inset-0 transition-opacity duration-500 ${
+                          index === currentSlide ? "opacity-100" : "opacity-0"
+                        }`}
+                      >
+                        <img
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-4">
+                          <h3 className="text-lg font-semibold mb-2">{slide.title}</h3>
+                          <p className="text-sm">{slide.description}</p>
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-3">{policy.summary}</p>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        发布时间：{policy.date}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+                    onClick={handlePrevSlide}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+                    onClick={handleNextSlide}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </Button>
                 </div>
               </div>
             )}

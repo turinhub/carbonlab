@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 
 export function HeroBanner() {
+  const router = useRouter()
   // 背景图片列表
   const backgroundImages = [
     "/banner-1.webp",
@@ -89,7 +91,7 @@ export function HeroBanner() {
         ))}
       </div>
 
-      <div className="relative z-10 text-center space-y-6 max-w-4xl mx-auto px-4">
+      <div className="relative z-0 text-center space-y-6 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-6xl font-bold leading-tight">
           碳经济与管理AI实训平台
         </h1>
@@ -99,7 +101,8 @@ export function HeroBanner() {
         <p className="text-xl md:text-2xl">
           全链条低碳实训，让你成为"双碳"时代的专业人才
         </p>
-        <div className="flex flex-wrap gap-4 justify-center">
+
+        <div className="flex flex-wrap gap-4 justify-center mt-8">
           <a
             href="#categories"
             onClick={handleScrollToCategories}
@@ -117,7 +120,7 @@ export function HeroBanner() {
       </div>
       
       {/* 进度条/小圆点，绝对定位到底部 */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex justify-center items-center gap-3 z-20">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex justify-center items-center gap-3 z-0">
         {backgroundImages.map((_, idx) => (
           <button
             key={idx}
