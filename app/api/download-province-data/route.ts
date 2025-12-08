@@ -6,7 +6,7 @@ import { join } from 'path'
 export async function GET() {
   try {
     // 检查文件是否存在
-    const filePath = join(process.cwd(), '碳中和预测实验省份相关数据.xlsx')
+    const filePath = join(process.cwd(), 'public', 'carbon-neutrality-prediction-data.xlsx')
     console.log('文件路径:', filePath)
     
     if (!existsSync(filePath)) {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     console.log('收到POST请求')
     
     // 检查文件是否存在
-    const filePath = join(process.cwd(), '碳中和预测实验省份相关数据.xlsx')
+    const filePath = join(process.cwd(), 'public', 'carbon-neutrality-prediction-data.xlsx')
     console.log('下载文件路径:', filePath)
     
     if (!existsSync(filePath)) {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': 'attachment; filename="碳中和预测实验省份相关数据.xlsx"'
+        'Content-Disposition': 'attachment; filename="carbon-neutrality-prediction-data.xlsx"'
       }
     })
   } catch (error) {

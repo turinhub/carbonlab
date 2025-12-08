@@ -58,7 +58,7 @@ export default function Chapter5Page({ params }: { params: Promise<{ "course-id"
         {/* PDF 查看器 - 参考8.31的样式 */}
         <div className="h-[calc(100vh-120px)] border rounded-lg">
           <PDFViewer 
-            pdfUrl="/第5章碳足迹计量.pdf"
+            pdfUrl="/chapter-5-carbon-footprint-measurement.pdf"
           />
         </div>
       </div>

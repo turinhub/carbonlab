@@ -64,7 +64,7 @@ export class EnhancedAppTokenService {
    */
   private getCachedAppToken(appKey: string): string | null {
     try {
-      return appTokenService.getValidAppToken(appKey);
+      return appTokenService.getAppToken(appKey);
     } catch (error) {
       console.warn('从缓存获取应用令牌失败:', error);
       return null;

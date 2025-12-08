@@ -723,8 +723,8 @@ export default function CarbonNeutralPredictionPage() {
     try {
       // 直接下载public目录中的文件
       const link = document.createElement('a')
-      link.href = '/碳中和预测实验省份相关数据.xlsx'
-      link.download = '碳中和预测实验省份相关数据.xlsx'
+      link.href = '/carbon-neutrality-prediction-data.xlsx'
+      link.download = 'carbon-neutrality-prediction-data.xlsx'
       link.target = '_blank'
       document.body.appendChild(link)
       link.click()
@@ -890,7 +890,7 @@ export default function CarbonNeutralPredictionPage() {
                 <div className="bg-white border rounded-lg p-4">
                   <div className="flex justify-center mb-4">
                     <img 
-                      src="/中国各省碳排放分布图.webp" 
+                      src="/china-provincial-carbon-emissions.webp" 
                       alt="中国各省碳排放分布图" 
                       className="max-w-full h-auto rounded-lg shadow-md"
                     />

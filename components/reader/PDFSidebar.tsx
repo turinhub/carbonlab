@@ -3,12 +3,12 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { pdfjs } from 'react-pdf';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 
 interface PDFSidebarProps {
-  pdfDocument: pdfjs.PDFDocumentProxy | null;
+  pdfDocument: PDFDocumentProxy | null;
   currentPage: number;
   onPageClick: (pageNumber: number) => void;
 }
@@ -64,7 +64,7 @@ export function PDFSidebar({
           await page.render({
             canvasContext: context,
             viewport,
-          }).promise;
+          } as any).promise;
 
           thumbs.push({
             pageNumber: i,

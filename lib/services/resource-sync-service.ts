@@ -702,10 +702,10 @@ export class ResourceSyncService {
         }
         
         const fileData: CreateFileRequest = {
-          folderId: taleFolderId,
-          fileName: processedFileName,
-          fileType: localFile.fileType || 'LINK',
-          linkUrl: localFile.url || localFile.linkUrl || `https://example.com/${encodeURIComponent(localFile.fileName)}`,
+          folder_id: taleFolderId,
+          file_name: processedFileName,
+          file_type: localFile.fileType || 'LINK',
+          link_url: localFile.url || localFile.linkUrl || `https://example.com/${encodeURIComponent(localFile.fileName)}`,
           remark: localFile.description || localFile.remark || `来自 ${repository.folderName} 的文件`
         };
 
@@ -752,7 +752,7 @@ export class ResourceSyncService {
   private async getRemoteFiles(taleFolderId: string): Promise<any[]> {
     try {
       console.log('📥 获取远程文件列表:', taleFolderId);
-      const response = await getFiles({ folderId: taleFolderId, page: 0, size: 1000 }, this.appKey);
+      const response = await getFiles({ folder_id: taleFolderId, page: 0, size: 1000 }, this.appKey);
       return response.data.content || [];
     } catch (error) {
       console.error('获取远程文件失败:', error);

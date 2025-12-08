@@ -37,11 +37,24 @@ import { getUsers, createUser, deleteUser, getUserDetail, saveUserRoles } from '
 import { getRoles, createRole, updateRole, deleteRole, updateRolePermissions } from '@/lib/api/roles'
 import { getAppTokens, getAppSecret } from '@/lib/api/app-tokens'
 import { getSmsRecords, resendSms, deleteSmsRecord, getSmsRecordDetail } from '@/lib/api/sms'
-import { AppUser, CreateUserRequest } from '@/types/tale'
-import { Role, CreateRoleRequest, UpdateRoleRequest } from '@/types/tale'
-import { SmsRecord } from '@/types/tale'
+import { AppUser, CreateUserRequest } from '@/lib/types/tale'
+import { Role, CreateRoleRequest, UpdateRoleRequest } from '@/lib/types/tale'
+import { SmsRecord } from '@/lib/types/tale'
 import { API_CONFIG } from '@/lib/config/api'
 import { appTokenService } from '@/lib/services/app-token-service'
+
+// 本地定义UI使用的用户类型（扁平化结构）
+interface DashboardUser {
+  user_id: string;
+  username: string;
+  phone: string | null;
+  email: string | null;
+  registered_at: string;
+  roles: any[];
+  status: string;
+  avatar_url: string | null;
+  [key: string]: any; // 允许其他属性
+}
 
 export default function DashboardHomePage() {
   const router = useRouter()
@@ -63,7 +76,7 @@ export default function DashboardHomePage() {
 
 
   // 用户管理相关状态
-  const [users, setUsers] = useState<AppUser[]>([])
+  const [users, setUsers] = useState<DashboardUser[]>([])
   const [roles, setRoles] = useState<Role[]>([])
   const [userLoading, setUserLoading] = useState(false)
   const [userSearchTerm, setUserSearchTerm] = useState('')
@@ -75,7 +88,7 @@ export default function DashboardHomePage() {
   const [createUserDialogOpen, setCreateUserDialogOpen] = useState(false)
   const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<AppUser | null>(null)
+  const [selectedUser, setSelectedUser] = useState<DashboardUser | null>(null)
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([])
   const [resetPasswordForm, setResetPasswordForm] = useState({
     newPassword: '',
@@ -157,6 +170,30 @@ export default function DashboardHomePage() {
     supportedTypes: 0
   })
 
+  // 班级统计数据
+  const [classStats, setClassStats] = useState({
+    totalClasses: 0,
+    ongoingClasses: 0,
+    totalStudents: 0
+  })
+
+  // 加载班级统计数据
+  const loadClassStats = () => {
+    try {
+      const savedClasses = localStorage.getItem('carbonlab-classes')
+      if (savedClasses) {
+        const classes = JSON.parse(savedClasses)
+        setClassStats({
+          totalClasses: classes.length,
+          ongoingClasses: classes.filter((c: any) => c.status === 'ongoing').length,
+          totalStudents: classes.reduce((total: number, cls: any) => total + (cls.currentStudents || 0), 0)
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load class stats:', error)
+    }
+  }
+
   // 加载资料库统计数据
   const loadResourcesStats = async () => {
     try {
@@ -227,6 +264,8 @@ export default function DashboardHomePage() {
     } else if (activeMenu === 'resources-management') {
       console.log('切换到资料库管理，开始加载统计数据')
       loadResourcesStats()
+    } else if (activeMenu === 'overview') {
+      loadClassStats()
     }
   }, [activeMenu])
 
@@ -625,7 +664,7 @@ export default function DashboardHomePage() {
   }
 
   // 处理密码重置
-  const handleResetPassword = (user: AppUser) => {
+  const handleResetPassword = (user: DashboardUser) => {
     setSelectedUser(user)
     setResetPasswordForm({
       newPassword: '',
@@ -724,7 +763,7 @@ export default function DashboardHomePage() {
   }
 
   // 处理编辑用户
-  const handleEditUser = (user: AppUser) => {
+  const handleEditUser = (user: DashboardUser) => {
     console.log('=== 开始编辑用户 ===')
     console.log('用户对象:', user)
     console.log('用户角色字段:', {
@@ -900,7 +939,7 @@ export default function DashboardHomePage() {
             
             if (roleId) {
               // 调用API更新用户角色，只保留一个角色
-              await saveUserRoles(user.user_id, [roleId], API_CONFIG.APP.APP_KEY)
+              await saveUserRoles(user.user_id, { role_ids: [roleId] }, API_CONFIG.APP.APP_KEY)
               console.log(`用户 ${user.username} 角色清理成功，保留角色: ${roleId}`)
               cleanedCount++
             } else {
@@ -2505,52 +2544,19 @@ export default function DashboardHomePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="text-center p-3 bg-white rounded-lg border border-blue-100">
                     <div className="text-2xl font-bold text-blue-600">
-                      {(() => {
-                        try {
-                          const savedClasses = localStorage.getItem('carbonlab-classes')
-                          if (savedClasses) {
-                            const classes = JSON.parse(savedClasses)
-                            return classes.length
-                          }
-                          return 0
-                        } catch {
-                          return 0
-                        }
-                      })()}
+                      {classStats.totalClasses}
                     </div>
                     <div className="text-sm text-blue-600">班级总数</div>
                   </div>
                   <div className="text-center p-3 bg-white rounded-lg border border-blue-100">
                     <div className="text-2xl font-bold text-blue-600">
-                      {(() => {
-                        try {
-                          const savedClasses = localStorage.getItem('carbonlab-classes')
-                          if (savedClasses) {
-                            const classes: any[] = JSON.parse(savedClasses)
-                            return classes.filter((c: any) => c.status === 'ongoing').length
-                          }
-                          return 0
-                        } catch {
-                          return 0
-                        }
-                      })()}
+                      {classStats.ongoingClasses}
                     </div>
                     <div className="text-sm text-blue-600">进行中班级</div>
                   </div>
                   <div className="text-center p-3 bg-white rounded-lg border border-blue-100">
                     <div className="text-2xl font-bold text-blue-600">
-                      {(() => {
-                        try {
-                          const savedClasses = localStorage.getItem('carbonlab-classes')
-                          if (savedClasses) {
-                            const classes: any[] = JSON.parse(savedClasses)
-                            return classes.reduce((total: number, cls: any) => total + (cls.currentStudents || 0), 0)
-                          }
-                          return 0
-                        } catch {
-                          return 0
-                        }
-                      })()}
+                      {classStats.totalStudents}
                     </div>
                     <div className="text-sm text-blue-600">学生总数</div>
                   </div>

@@ -35,95 +35,95 @@ interface ReportCategory {
 const reportCategories = [
   {
     id: "international",
-    title: "国际报告",
+    title: "International Reports",
     icon: Globe,
     datasets: [
       {
-        title: "世界能源投资报告 2025",
+        title: "World Energy Investment 2025",
         url: "https://www.iea.org/reports/world-energy-investment-2025",
-        description: "国际能源署（IEA）：全球能源投资达 3.3 万亿美元，清洁能源投资首次翻倍于化石燃料"
+        description: "IEA: Global energy investment reaches $3.3 trillion, clean energy investment doubles fossil fuels for the first time."
       },
       {
-        title: "碳定价的现状和趋势 2024",
+        title: "State and Trends of Carbon Pricing 2024",
         url: "https://www.shihang.org/zh/news/press-release/2024/05/21/global-carbon-pricing-revenues-top-a-record-100-billion",
-        description: "世界银行：全球碳定价收入突破 1040 亿美元，覆盖 24% 全球排放量"
+        description: "World Bank: Global carbon pricing revenues top $104 billion, covering 24% of global emissions."
       },
       {
-        title: "关于推进气候政策“公正转型”",
+        title: "Advancing a Just Transition in Climate Policy",
         url: "https://unfccc.int/news/un-climate-change-launches-new-report-on-advancing-a-just-transition-in-climate-policy",
-        description: "联合国气候变化框架公约（UNFCCC）：提出四维监测框架，确保低碳转型中就业、性别、区域等多维度公平"
+        description: "UNFCCC: Proposes a four-dimensional monitoring framework to ensure fairness in employment, gender, and regional aspects during low-carbon transition."
       },
       {
-        title: "2023 年 ICAP 全球碳市场进展报告",
+        title: "ICAP Status Report 2023",
         url: "https://icapcarbonaction.com/zh/publications/2023-nian-icap-quanqiutanshichangjinzhanbaogao",
-        description: "国际碳行动伙伴组织（ICAP）：全球碳市场拍卖收入达 630 亿美元，新增 3 个碳市场"
+        description: "ICAP: Global carbon market auction revenues reach $63 billion, with 3 new carbon markets added."
       },
       {
-        title: "2025年能源进展报告",
+        title: "Tracking SDG 7: The Energy Progress Report 2025",
         url: "https://www.irena.org/Publications/2025/Jun/Tracking-SDG-7-The-Energy-Progress-Report-2025",
-        description: "国际可再生能源署（IRENA）：2023年相关指标有一定进步但仍存差距，6.66亿人缺电"
+        description: "IRENA: Some progress in 2023 indicators but gaps remain, 666 million people lack electricity."
       },
       {
-        title: "中国低碳城市发展：全球百余城市评估结果",
+        title: "Low-Carbon City Development in China: Evaluation Results",
         url: "https://www.wri.org/research/low-carbon-city-development-china-evaluation-results-more-100-cities-around-world",
-        description: "世界资源研究所（WRI）：从四维度构建15项指标评估体系评估世界城市低碳发展情况，前三名为中国城市"
+        description: "WRI: Evaluation of world cities' low-carbon development based on a 15-indicator system across four dimensions, with Chinese cities in the top three."
       },
       {
-        title: "首席财务官在推动低碳转型中的作用",
+        title: "The Role of CFOs in Driving Low-Carbon Transition",
         url: "https://www.climatebonds.net/data-insights/publications/role-chief-financial-officer-driving-low-carbon-transition",
-        description: "气候债券倡议组织（CBI）：对总市值 9300 亿美元的 30 多位首席财务官的访谈"
+        description: "CBI: Interviews with over 30 CFOs representing a total market capitalization of $930 billion."
       },
       {
-        title: "碳市场在促进碳中和中的作用",
+        title: "The Role of Carbon Markets in Facilitating Carbon Neutrality",
         url: "https://www.adb.org/publications/the-role-of-carbon-markets-in-facilitating-carbon-neutrality",
-        description: "亚洲开发银行（ADB）：碳信用质量参差不齐，亚洲需促进碳信用和市场互操作性，要求企业了解碳信用相关框架。"
+        description: "ADB: Carbon credit quality varies; Asia needs to promote carbon credit and market interoperability, requiring companies to understand relevant frameworks."
       }
     ]
   },
   {
     id: "china",
-    title: "中国报告",
+    title: "China Reports",
     icon: Database,
     datasets: [
       {
-        title: "全国碳市场发展报告 2024",
+        title: "National Carbon Market Development Report 2024",
         url: "https://www.mee.gov.cn/ywdt/xwfb/202407/t20240722_1082192.shtml",
-        description: "生态环境部：全国碳市场覆盖 51 亿吨 CO₂，配额价格升至 78 元 / 吨"
+        description: "MEE: National carbon market covers 5.1 billion tons of CO2, quota price rises to 78 RMB/ton."
       },
       {
-        title: "广东省碳市场发展报告 2024",
+        title: "Guangdong Carbon Market Development Report 2024",
         url: "https://gdee.gd.gov.cn/ydqhbh/xwdt/content/post_4499898.html",
-        description: "广东省生态环境厅：广东碳市场累计成交 4.15 亿吨，碳普惠用户突破 100 万"
+        description: "Guangdong Department of Ecology and Environment: Guangdong carbon market cumulative turnover 415 million tons, carbon inclusion users exceed 1 million."
       },
       {
-        title: "北京市生态环境状况公报 2024",
+        title: "Beijing Ecological Environment Statement 2024",
         url: "https://sthjj.beijing.gov.cn/bjhrb/index/xxgk69/zfxxgk43/fdzdgknr2/ywdt28/xwfb/743619512/index.html",
-        description: "北京市生态环境局：PM2.5 浓度 30.5 微克 / 立方米，万元 GDP 碳排放全国最优"
+        description: "Beijing Municipal Ecology and Environment Bureau: Carbon intensity drops by 3% year-on-year, maintaining the lowest level among provincial units nationwide."
       },
       {
-        title: "上海市碳市场十周年评估报告",
+        title: "Shanghai Carbon Market 10th Anniversary Assessment Report",
         url: "https://sthj.sh.gov.cn/hbzhywpt1272/hbzhywpt1158/20240726/3fbbddcbd80149b18418a85baa3a62b2.html",
-        description: "上海市生态环境局：上海碳市场累计成交 2.49 亿吨，配额价格稳中有升"
+        description: "Shanghai Ecology and Environment Bureau: Shanghai carbon market cumulative turnover 249 million tons, quota price steadily increasing."
       },
       {
-        title: "湖北省碳市场发展报告 2024",
+        title: "Hubei Carbon Market Development Report 2024",
         url: "https://sthjt.hubei.gov.cn/hjsj/ztzl/qsydwxxgk/hbgg/202503/t20250318_5579829.shtml",
-        description: "湖北省生态环境厅：湖北碳市场成交额突破百亿元，中碳登服务全国"
+        description: "Hubei Department of Ecology and Environment: Hubei carbon market turnover exceeds 10 billion RMB, serving the whole country."
       },
       {
-        title: "全国碳市场配额分配方案（2023-2024）",
+        title: "National Carbon Market Quota Allocation Plan (2023-2024)",
         url: "https://www.mee.gov.cn/zcwj/zcjd/202410/t20241021_1089825.shtml",
-        description: "生态环境部：钢铁、水泥行业纳入全国碳市场，基准值下降 15%"
+        description: "MEE: Steel and cement industries included in the national carbon market, benchmarks lowered by 15%."
       },
       {
-        title: "深圳市应对气候变化白皮书",
+        title: "Shenzhen White Paper on Responding to Climate Change",
         url: "https://meeb.sz.gov.cn/ztfw/ztzl/ydqhbh/qhsy/content/post_12250687.html",
-        description: "深圳市生态环境局：2024 年深圳清洁能源装机占比超 80%、新能源汽车渗透率 76.9%，碳市场累计成交 1.08 亿吨"
+        description: "Shenzhen Ecology and Environment Bureau: Clean energy installed capacity >80% in 2024, NEV penetration 76.9%, carbon market turnover 108 million tons."
       },
       {
-        title: "成渝地区双城经济圈碳达峰碳中和联合行动方案",
+        title: "Chengdu-Chongqing Twin City Economic Circle Carbon Peaking and Carbon Neutrality Joint Action Plan",
         url: "https://mp.weixin.qq.com/s/FHfLB0tOSp_eKENy82GU7w",
-        description: "重庆市人民政府、四川省人民政府：建立跨区域碳配额互认机制，年交易规模目标 50 亿元"
+        description: "Chongqing and Sichuan Governments: Establish cross-regional carbon quota mutual recognition mechanism, targeting 5 billion RMB annual transaction volume."
       }
     ]
   },
@@ -131,39 +131,39 @@ const reportCategories = [
 
 const reportSites = [
   {
-    title: "国际碳行动伙伴组织（ICAP）报告库",
+    title: "ICAP Report Library",
     url: "https://icapcarbonaction.com/zh",
-    description: "全球碳市场动态跟踪，提供各国碳定价机制深度分析"
+    description: "Global carbon market tracking, providing in-depth analysis of carbon pricing mechanisms worldwide."
   },
   {
-    title: "世界银行碳定价门户网站",
+    title: "World Bank Carbon Pricing Dashboard",
     url: "https://carbonpricingdashboard.worldbank.org/",
-    description: "涵盖 75 个碳定价机制数据库，提供收入使用情况可视化工具"
+    description: "Covers 75 carbon pricing mechanism databases, providing visualization tools for revenue usage."
   },
   {
-    title: "中国碳市场网",
+    title: "China Carbon Market Network",
     url: "http://www.tanjiaoyi.com/",
-    description: "全国碳市场官方信息发布平台，提供配额分配、交易数据查询"
+    description: "Official information platform for the national carbon market, providing quota allocation and trading data queries."
   },
   {
-    title: "清华大学碳中和研究院",
+    title: "Institute for Carbon Neutrality, Tsinghua University",
     url: "https://www.icon.tsinghua.edu.cn/",
-    description: "发布《全球碳中和年度进展报告》，提供区域碳市场深度研究"
+    description: "Publishes 'Annual Report on Global Carbon Neutrality Progress', providing in-depth research on regional carbon markets."
   },
   {
-    title: "国际能源署（IEA）能源报告中心",
+    title: "IEA Energy Report Center",
     url: "https://www.iea.org/analysis?type=report",
-    description: "涵盖能源投资、可再生能源、氢能等领域的年度旗舰报告"
+    description: "Covers annual flagship reports in energy investment, renewable energy, hydrogen energy, etc."
   },
   {
-    title: "联合国气候变化框架公约（UNFCCC）图书馆",
+    title: "UNFCCC Library",
     url: "https://unfccc.int/zh",
-    description: "收录 COP 会议成果文件、全球碳信用机制标准等权威文档"
+    description: "Contains COP meeting outcome documents, authoritative documents on global carbon credit mechanism standards."
   },
   {
-    title: "彭博新能源财经（BNEF）报告库",
+    title: "BloombergNEF (BNEF) Report Library",
     url: "https://about.bnef.com/",
-    description: "全球能源转型投资趋势分析，提供清洁能源技术成本预测"
+    description: "Global energy transition investment trend analysis, providing clean energy technology cost forecasts."
   }
 ]
 
@@ -190,7 +190,7 @@ export default function ReportsPage() {
                 datasets: reports.map(report => ({
                   title: report.title,
                   url: report.url || `/admin/libraries/${report.repositoryId}/files/${report.id}/viewer`,
-                  description: report.description || '暂无描述',
+                  description: report.description || 'No description',
                   fileType: report.fileType,
                   preview_image_url: report.preview_image_url || null,
                   repositoryId: report.repositoryId,

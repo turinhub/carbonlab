@@ -30,7 +30,7 @@ export default function PptViewer({ pptUrl, fileName }: PptViewerProps) {
 
     try {
       // 动态导入 pptx-preview
-      const { default: PptxGenJS } = await import('pptx-preview');
+      const { default: PptxGenJS } = (await import('pptx-preview')) as any;
 
       if (containerRef.current) {
         // 清空容器

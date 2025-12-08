@@ -92,6 +92,36 @@ export async function getClasses(
   return result.data;
 }
 
+// 获取单个班级详情
+export async function getClass(
+  classId: string,
+  appKey?: string
+): Promise<Class & { memberCount?: number }> {
+  if (!appKey) {
+    throw new Error('No app key provided');
+  }
+
+  const appToken = await appTokenService.getValidAppToken(appKey);
+  if (!appToken) {
+    throw new Error('No valid app token');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/user-group/v1/${classId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-t-token': appToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return result.data;
+}
+
 // 创建班级
 export async function createClass(
   classData: CreateClassRequest,
@@ -113,36 +143,6 @@ export async function createClass(
       'x-t-token': appToken,
     },
     body: JSON.stringify(classData),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
-}
-
-// 获取班级详情
-export async function getClass(
-  classId: string,
-  appKey?: string
-): Promise<Class> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/user-group/v1/${classId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
   });
 
   if (!response.ok) {

@@ -59,6 +59,13 @@ class HttpClient {
       }
     }
 
+    // Safe header encoding check
+    Object.entries(requestHeaders).forEach(([key, value]) => {
+      if (/[^\x00-\x7F]/.test(value)) {
+        console.error(`[HttpClient Warning] Header '${key}' contains non-ASCII characters:`, value);
+      }
+    });
+
     // 发送请求
     let response = await fetch(fullUrl, {
       method,

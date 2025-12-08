@@ -5,7 +5,7 @@ import path from 'path'
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'public', '碳中和预测实验省份相关数据.xlsx')
+    const filePath = path.join(process.cwd(), 'public', 'carbon-neutrality-prediction-data.xlsx')
     
     if (!existsSync(filePath)) {
       return NextResponse.json({ error: '文件不存在' }, { status: 404 })

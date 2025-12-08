@@ -297,8 +297,8 @@ export function InventoryStep({
             <Button 
               onClick={() => {
                 const link = document.createElement('a')
-                link.href = '/清单一：交通基础设施项目工程量清单.xlsx'
-                link.download = '清单一：交通基础设施项目工程量清单.xlsx'
+                link.href = '/list-1-transport-infrastructure-bq.xlsx'
+                link.download = 'list-1-transport-infrastructure-bq.xlsx'
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -445,7 +445,6 @@ export function InventoryStep({
                   <td className="border border-gray-300 px-3 py-3 text-center">C30混凝土</td>
                   <td className="border border-gray-300 px-3 py-3 text-center">m²</td>
                   <td className="border border-gray-300 px-3 py-3 text-center font-mono">4206</td>
-                  <td className="border border-gray-300 px-3 py-3 text-center">C30混凝土</td>
                   <td className="border border-gray-300 px-3 py-3 text-center font-mono">841.2</td>
                   <td className="border border-gray-300 px-3 py-3 text-center">m³</td>
                   <td className="border border-gray-300 px-3 py-3 text-center font-mono">295</td>
@@ -540,8 +539,8 @@ export function InventoryStep({
             <Button 
               onClick={() => {
                 const link = document.createElement('a')
-                link.href = '/清单二：道路施工进度计划对应人员、机械配置.xlsx'
-                link.download = '清单二：道路施工进度计划对应人员、机械配置.xlsx'
+                link.href = '/list-2-road-construction-schedule.xlsx'
+                link.download = 'list-2-road-construction-schedule.xlsx'
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -599,7 +598,7 @@ export function InventoryStep({
                   <td className="border border-gray-300 px-3 py-3 text-center" rowSpan={5}>7人</td>
                   <td className="border border-gray-300 px-3 py-3 text-center" rowSpan={5}>
                     <Image
-                      src="/劳动者生活碳排放因子.webp"
+                      src="/worker-carbon-emission-factors.webp"
                       alt="劳动者生活碳排放因子"
                       width={200}
                       height={150}
@@ -628,7 +627,7 @@ export function InventoryStep({
                   <td className="border border-gray-300 px-3 py-3 text-center">100天</td>
                   <td className="border border-gray-300 px-3 py-3 text-center">
                     <Image
-                      src="/国机重工常林挖掘机.webp"
+                      src="/sinomach-changlin-excavator.webp"
                       alt="国机重工常林挖掘机"
                       width={150}
                       height={100}
@@ -648,7 +647,7 @@ export function InventoryStep({
                   <td className="border border-gray-300 px-3 py-3 text-center">100天</td>
                   <td className="border border-gray-300 px-3 py-3 text-center">
                     <Image
-                      src="/小松挖掘机.webp"
+                      src="/komatsu-excavator.webp"
                       alt="小松挖掘机"
                       width={150}
                       height={100}
@@ -668,7 +667,7 @@ export function InventoryStep({
                   <td className="border border-gray-300 px-3 py-3 text-center">100天</td>
                   <td className="border border-gray-300 px-3 py-3 text-center">
                     <Image
-                      src="/徐工轮式装载机参数配置.webp"
+                      src="/xcmg-loader-specs.webp"
                       alt="徐工轮式装载机参数配置"
                       width={150}
                       height={100}
@@ -705,7 +704,7 @@ export function InventoryStep({
       <Dialog open={showImage} onOpenChange={setShowImage}>
         <DialogContent className="max-w-4xl">
           <Image
-            src="/交通基础设施项目工程量清单备注.webp"
+            src="/transport-infrastructure-bq-notes.webp"
             alt="工程量清单备注"
             width={1200}
             height={800}

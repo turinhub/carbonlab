@@ -168,7 +168,48 @@ export interface UserPrivilege {
   privilege_type: string;
   privilege_property: Record<string, unknown>;
   expired_at?: string;
-  remark?: string;
+}
+
+// 角色相关类型别名和补充定义
+export type Role = UserRole;
+
+export interface RolesResponse {
+  total: number;
+  content: Role[];
+  pageable: {
+    sort: {
+      orders: Array<{
+        direction: string;
+        property: string;
+        ignoreCase: boolean;
+        nullHandling: string;
+      }>;
+    };
+    pageNumber: number;
+    pageSize: number;
+  };
+}
+
+export interface RolesQueryParams {
+  page: number;
+  size: number;
+  role_type?: string;
+  search?: string;
+}
+
+export interface CreateRoleRequest {
+  role_name: string;
+  role_type: string;
+  role_property?: Record<string, unknown>;
+  description?: string;
+}
+
+export interface UpdateRoleRequest {
+  role_id: string;
+  role_name?: string;
+  role_type?: string;
+  role_property?: Record<string, unknown>;
+  description?: string;
 }
 
 // 修复AppUser接口

@@ -1,7 +1,17 @@
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_TALE_BACKEND_URL || process.env.TALE_BASE_URL || process.env.NEXT_PUBLIC_TALE_BASE_URL;
+  process.env.NEXT_PUBLIC_TALE_BACKEND_URL || process.env.TALE_BASE_URL || process.env.NEXT_PUBLIC_TALE_BASE_URL || 'https://api.turingue.com';
 const PLATO_BASE_URL =
-  process.env.NEXT_PUBLIC_PLATO_BASE_URL || process.env.PLATO_BASE_URL;
+  process.env.NEXT_PUBLIC_PLATO_BASE_URL || process.env.PLATO_BASE_URL || 'https://api.turingue.com';
+
+// Debug env vars
+if (typeof window !== 'undefined') {
+  console.log('API Config:', {
+    API_BASE_URL,
+    PLATO_BASE_URL,
+    NEXT_PUBLIC_TALE_BACKEND_URL: process.env.NEXT_PUBLIC_TALE_BACKEND_URL,
+    NEXT_PUBLIC_PLATO_BASE_URL: process.env.NEXT_PUBLIC_PLATO_BASE_URL
+  });
+}
   
 // 通用API请求配置
 export interface ApiRequestConfig {
@@ -46,6 +56,22 @@ export const apiRequest = async <T = unknown>(
       ...headers,
     },
   };
+
+  // Safe header encoding check
+  Object.entries(requestConfig.headers as Record<string, string>).forEach(([key, value]) => {
+    // Check for non-ASCII characters in header values
+    if (/[^\x00-\x7F]/.test(value)) {
+      console.error(`[API Warning] Header '${key}' contains non-ASCII characters:`, value);
+      // Optional: Encode it or strip it?
+      // For now, just log it.
+      try {
+        // Try to encode if possible, but usually headers must be ASCII (ISO-8859-1)
+        // If it's a token, it might be corrupted.
+        // If it's a custom header like 'app-name', we should encodeURI.
+        // requestConfig.headers[key] = encodeURIComponent(value);
+      } catch (e) {}
+    }
+  });
 
   // 添加请求体
   if (body && method !== 'GET') {
@@ -192,6 +218,13 @@ export const platoApiRequest = async <T = unknown>(
       ...headers,
     },
   };
+
+  // Safe header encoding check
+  Object.entries(requestConfig.headers as Record<string, string>).forEach(([key, value]) => {
+    if (/[^\x00-\x7F]/.test(value)) {
+      console.error(`[Plato API Warning] Header '${key}' contains non-ASCII characters:`, value);
+    }
+  });
 
   // 添加请求体
   if (body && method !== 'GET') {

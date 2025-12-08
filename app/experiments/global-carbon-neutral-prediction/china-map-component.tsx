@@ -34,7 +34,7 @@ export default function ChinaMapComponent({ data, selectedProvince, onProvinceSe
 
   useEffect(() => {
     // 加载SVG地图并直接修改颜色
-    fetch('/中华人民共和国.svg')
+    fetch('/china-map.svg')
       .then(response => response.text())
       .then(svgText => {
         if (mapData.length > 0) {

@@ -7,9 +7,6 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -28,20 +25,12 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-  webpack: (config, { isServer }) => {
-    // 忽略canvas模块，避免构建时的node模块错误
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      canvas: false,
-    };
-    
-    // 忽略canvas相关的node模块
-    config.externals = config.externals || [];
-    config.externals.push({
-      canvas: 'canvas',
-    });
-    
-    return config;
+  // 迁移到 Turbopack：使用 resolveAlias 替代 webpack.alias
+  turbopack: {
+    resolveAlias: {
+      // 在浏览器构建中将对 canvas 的导入映射为一个空模块，避免引用 Node 原生模块
+      canvas: './lib/empty-module.js',
+    },
   },
 }
 

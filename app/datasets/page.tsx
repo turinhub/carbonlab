@@ -23,6 +23,59 @@ interface DatasetItem {
   id?: string;
 }
 
+const datasets: DatasetItem[] = [
+  {
+    title: "China Carbon Accounting Database (CEADs)",
+    url: "https://www.ceads.net.cn/",
+    description: "Provides the most up-to-date and complete energy and carbon emission data for China.",
+  },
+  {
+    title: "Our World in Data - CO2 and Greenhouse Gas Emissions",
+    url: "https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions",
+    description: "Global long-term series data on CO2 and greenhouse gas emissions, supporting interactive visualization.",
+  },
+  {
+    title: "Renewable Energy Capacity Statistics 2025 (IRENA)",
+    url: "https://www.irena.org/Publications/2025/Mar/Renewable-capacity-statistics-2025",
+    description: "This publication provides renewable energy capacity statistics for the past decade (2015-2024) in trilingual tables."
+  },
+  {
+    title: "IEA Energy Data",
+    url: "https://www.iea.org/data-and-statistics",
+    description: "Global energy data provided by the International Energy Agency, including carbon emissions, renewable energy, etc."
+  },
+  {
+    title: "World Bank Climate Data",
+    url: "https://climateknowledgeportal.worldbank.org/",
+    description: "Global climate data provided by the World Bank."
+  },
+  {
+    title: "Global Carbon Budget",
+    url: "https://www.globalcarbonproject.org/carbonbudget/",
+    description: "Provides global and national annual carbon emission data and carbon sink information."
+  },
+  {
+    title: "UN Environment Programme (UNEP)",
+    url: "https://www.unep.org/explore-topics/climate-action",
+    description: "Provides global environmental policies and carbon emission trend reports."
+  },
+  {
+    title: "EDGAR (Global Carbon Emissions Database)",
+    url: "https://edgar.jrc.ec.europa.eu/",
+    description: "Global carbon emissions database developed by the Joint Research Centre (JRC) of the European Commission."
+  },
+  {
+    title: "CDP (Global Corporate Carbon Disclosure Platform)",
+    url: "https://www.cdp.net/en",
+    description: "Provides corporate carbon emissions and climate action data."
+  },
+  {
+    title: "Our World in Data",
+    url: "https://ourworldindata.org/co2-emissions",
+    description: "Visualization of global carbon emissions and energy data."
+  }
+]
+
 interface DatasetCategory {
   id: string;
   title: string;
@@ -34,118 +87,98 @@ interface DatasetCategory {
 const dataCategories: DatasetCategory[] = [
   {
     id: "insights",
-    title: "数据洞察",
+    title: "Data Insights",
     icon: BarChart3,
     datasets: [] // 将通过API动态填充
   },
   {
     id: "global",
-    title: "全球数据",
+    title: "Global Data",
     icon: Globe,
     datasets: [
       {
-        title: "2025年可再生能源容量统计数据（IRENA）",
+        title: "Renewable Energy Capacity Statistics 2025 (IRENA)",
         url: "https://www.irena.org/Publications/2025/Mar/Renewable-capacity-statistics-2025",
-        description: "本出版物以三种语言的表格形式提供了过去十年（2015-2024 年）可再生能源发电容量统计数据。"
+        description: "This publication provides renewable energy capacity statistics for the past decade (2015-2024) in trilingual tables."
       },
       {
-        title: "IEA 能源数据",
+        title: "IEA Energy Data",
         url: "https://www.iea.org/data-and-statistics",
-        description: "国际能源署提供的全球能源数据，包括碳排放、可再生能源等"
+        description: "Global energy data provided by the International Energy Agency, including carbon emissions, renewable energy, etc."
       },
       {
-        title: "世界银行气候数据",
+        title: "World Bank Climate Data",
         url: "https://climateknowledgeportal.worldbank.org/",
-        description: "世界银行提供的全球气候变化相关数据"
+        description: "Global climate data provided by the World Bank."
       },
       {
-        title: "全球碳预算（Global Carbon Budget）",
+        title: "Global Carbon Budget",
         url: "https://www.globalcarbonproject.org/carbonbudget/",
-        description: "提供全球及各国年度碳排放数据、碳汇信息"
+        description: "Provides global and national annual carbon emission data and carbon sink information."
       },
       {
-        title: "联合国环境规划署（UNEP）",
+        title: "UN Environment Programme (UNEP)",
         url: "https://www.unep.org/explore-topics/climate-action",
-        description: "提供全球环境政策、碳排放趋势报告"
+        description: "Provides global environmental policies and carbon emission trend reports."
       },
       {
-        title: "EDGAR（全球碳排放数据库）",
+        title: "EDGAR (Global Carbon Emissions Database)",
         url: "https://edgar.jrc.ec.europa.eu/",
-        description: "欧盟委员会联合研究中心（JRC）开发的全球碳排放数据库"
+        description: "Global carbon emissions database developed by the Joint Research Centre (JRC) of the European Commission."
       },
       {
-        title: "CDP（全球企业碳排放披露平台）",
+        title: "CDP (Global Corporate Carbon Disclosure Platform)",
         url: "https://www.cdp.net/en",
-        description: "提供企业碳排放、气候行动数据"
+        description: "Provides corporate carbon emissions and climate action data."
       },
       {
         title: "Our World in Data",
         url: "https://ourworldindata.org/co2-emissions",
-        description: "全球碳排放与能源数据可视化"
+        description: "Visualization of global carbon emissions and energy data."
       }
     ]
   },
   {
     id: "china",
-    title: "中国数据",
+    title: "China Data",
     icon: Database,
     datasets: [
       {
-        title: "中国碳核算数据库（CEADs）",
-        url: "https://www.ceads.net/",
-        description: "中国多尺度碳排放核算数据库，涵盖省份、行业、企业数据"
+        title: "China Carbon Accounting Database (CEADs)",
+        url: "https://www.ceads.net.cn/",
+        description: "Provides the most up-to-date and complete energy and carbon emission data for China."
       },
       {
-        title: "国家统计局",
+        title: "National Bureau of Statistics",
         url: "http://www.stats.gov.cn/",
-        description: "提供中国能源消费、工业产值等基础数据"
+        description: "Provides official China Statistical Yearbook and energy statistics data."
       },
       {
-        title: "中国能源统计年鉴",
-        url: "http://www.stats.gov.cn/tjsj/ndsj/",
-        description: "可下载历年能源消费数据"
-      },
-      {
-        title: "生态环境部",
+        title: "Ministry of Ecology and Environment",
         url: "https://www.mee.gov.cn/",
-        description: "发布全国碳市场政策、企业排放数据"
+        description: "Provides China's ecological environment bulletins and carbon emission policies."
       },
       {
-        title: "中国电力企业联合会",
-        url: "http://www.cec.org.cn/",
-        description: "提供电力行业碳排放、可再生能源数据"
-      },
-      {
-        title: "清华大学中国碳市场研究中心",
-        url: "http://www.rcets.org/",
-        description: "研究中国碳市场、碳定价政策"
-      },
-      {
-        title: "万得（Wind）金融数据库",
-        url: "https://www.wind.com.cn/",
-        description: "提供中国上市公司碳排放、ESG数据（需订阅）"
-      },
-      {
-        title: "碳交易网",
-        url: "http://www.tanjiaoyi.com/",
-        description: "提供中国碳市场交易数据、政策分析"
+        title: "China Carbon Trading Platform",
+        url: "http://www.cneeex.com/",
+        description: "Data related to China's national carbon emission trading market."
       }
     ]
   },
   {
-    id: "tools",
-    title: "数据工具",
-    icon: Search,
+    id: "policies",
+    title: "Policy Documents",
+    icon: FileText,
     datasets: [
       {
-        title: "Google Dataset Search",
-        url: "https://datasetsearch.research.google.com/",
-        description: "可搜索全球公开的双碳相关数据集"
+        title: "Dual Carbon Policy Database",
+        url: "http://www.gov.cn/zhengce/",
+        description: "Policy documents related to Carbon Peaking and Carbon Neutrality released by the State Council."
       },
       {
-        title: "GitHub 开源数据项目",
-        url: "https://github.com/topics/carbon-emissions",
-        description: "例如：Open Power System Data（欧洲电力数据）"
+        title: "CCER Management Measures",
+        url: "https://www.mee.gov.cn/xxgk2018/xxgk/xxgk02/202310/t20231020_1043694.html",
+        description: "Administrative Measures for Voluntary Greenhouse Gas Emission Reduction Trading (Trial)."
       }
     ]
   }

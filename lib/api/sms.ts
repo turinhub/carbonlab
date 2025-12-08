@@ -1,4 +1,4 @@
-import { SmsRecord, SmsRecordsResponse, SmsQueryParams } from '@/types/tale'
+import { SmsRecord, SmsRecordsResponse, SmsQueryParams } from '@/lib/types/tale'
 import { appTokenService } from '@/lib/services/app-token-service'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_TALE_BACKEND_URL || 'https://api.turingue.com'

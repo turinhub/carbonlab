@@ -13,21 +13,21 @@ import { FeedbackForm } from "@/components/news/FeedbackForm"
 const policySlides = [
   {
     id: 1,
-    image: "/全国碳市场建设方案.webp",
+    image: "/national-carbon-market-plan.webp",
     title: "全国碳市场建设方案",
     description: "深化全国碳市场建设，完善碳排放权交易制度",
     tag: "最新发布"
   },
   {
     id: 2,
-    image: "/国务院发布《碳排放权交易管理暂行条例》.webp",
+    image: "/carbon-emission-trading-regulation.webp",
     title: "碳排放权交易管理暂行条例",
     description: "国务院发布《碳排放权交易管理暂行条例》，构建全国碳市场法律框架",
     tag: "重要政策"
   },
   {
     id: 3,
-    image: "/碳关税政策解读.webp",
+    image: "/carbon-tariff-policy.webp",
     title: "碳关税政策解读",
     description: "欧盟碳边境调节机制（CBAM）对中国企业的影响分析",
     tag: "政策解读"

@@ -123,11 +123,13 @@ export class ResourceDetailSyncService {
       if (file.taleFileId) {
         // 更新现有文件
         const updateData: UpdateFileRequest = {
-          fileName: file.fileName,
-          fileType: file.fileType,
-          fileUrl: file.fileUrl,
+          id: file.taleFileId,
+          folder_id: taleFolderId,
+          file_name: file.fileName,
+          file_type: file.fileType,
+          link_url: file.fileUrl,
           remark: file.remark || '',
-          fileAttr: file.fileAttr || {}
+          file_attr: file.fileAttr || {}
         };
 
         const updatedFile = await updateFile(file.taleFileId, updateData, this.appKey);
@@ -144,12 +146,12 @@ export class ResourceDetailSyncService {
       } else {
         // 创建新文件
         const createData: CreateFileRequest = {
-          folderId: taleFolderId,
-          fileName: file.fileName,
-          fileType: file.fileType,
-          fileUrl: file.fileUrl,
+          folder_id: taleFolderId,
+          file_name: file.fileName,
+          file_type: file.fileType,
+          link_url: file.fileUrl,
           remark: file.remark || '',
-          fileAttr: file.fileAttr || {}
+          file_attr: file.fileAttr || {}
         };
 
         const createdFile = await createFile(createData, this.appKey);

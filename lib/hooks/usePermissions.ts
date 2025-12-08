@@ -75,7 +75,8 @@ export const getDefaultPermissions = (roleType: string): UserPermissions => {
 
 // 权限控制Hook
 export const usePermissions = () => {
-  const { user, userRoles } = useUserStore()
+  const { user } = useUserStore()
+  const userRoles = user?.roles || []
   
   // 获取用户权限
   const getUserPermissions = (): UserPermissions => {

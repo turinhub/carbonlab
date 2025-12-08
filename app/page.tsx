@@ -88,21 +88,21 @@ const getModuleButtonClass = (module: string) => {
 const policySlides = [
   {
     id: 1,
-    image: "/中国碳市场大会.webp",
-    title: "2024中国碳市场大会在汉开幕",
-    description: "以\"深化碳市场交流合作，应对全球气候变化\"为主题。会上正式发布《全国碳市场发展报告（2024）》。"
+    image: "/china-carbon-market-conference.webp",
+    title: "2024 China Carbon Market Conference Opens in Wuhan",
+    description: "Themed 'Deepening Carbon Market Exchange and Cooperation, Responding to Global Climate Change'. The 'National Carbon Market Development Report (2024)' was officially released at the conference."
   },
   {
     id: 2,
-    image: "/国务院发布《碳排放权交易管理暂行条例》.webp",
-    title: "国务院发布《碳排放权交易管理暂行条例》",
-    description: "我国首部应对气候变化专门行政法规，构建全国碳市场法律框架，规范配额分配、交易、核查及数据管理，明确对数据造假行为的严惩措施。"
+    image: "/carbon-emission-trading-regulation.webp",
+    title: "State Council Releases 'Interim Regulations on Carbon Emission Trading Management'",
+    description: "China's first specialized administrative regulation on responding to climate change, constructing the legal framework for the national carbon market, regulating quota allocation, trading, verification, and data management, and clarifying severe penalties for data falsification."
   },
   {
     id: 3,
-    image: "/碳关税政策解读.webp",
-    title: "碳关税政策解读",
-    description: "2022年12月13日，欧盟理事会和欧洲议会经过第四次三方协商就碳边境调节机制（CBAM）法规的最终文本达成临时协议，将于2026年开始全面起征。"
+    image: "/carbon-tariff-policy.webp",
+    title: "Interpretation of Carbon Tariff Policy",
+    description: "On December 13, 2022, the Council of the European Union and the European Parliament reached a provisional agreement on the final text of the Carbon Border Adjustment Mechanism (CBAM) regulation after the fourth trilogue, which will be fully implemented starting in 2026."
   }
 ]
 
@@ -111,19 +111,19 @@ const policySlides = [
 const datasets = [
   {
     id: 1,
-    title: "中国统计年鉴（国家统计局）",
+    title: "China Statistical Yearbook (NBS)",
     updateTime: "2024-03-15",
     url: "https://www.stats.gov.cn/sj/ndsj/"
   },
   {
     id: 2,
-    title: "中国碳核算数据库（CEADs）",
+    title: "China Carbon Accounting Database (CEADs)",
     updateTime: "2024-03-10",
     url: "https://www.ceads.net.cn/"
   },
   {
     id: 3,
-    title: "碳价指数分析报告",
+    title: "Carbon Price Index Analysis Report",
     updateTime: "2024-03-05",
     url: "/data/carbon-price-index"
   }
@@ -274,7 +274,7 @@ export default function Home() {
         
         if (reports.length > 0) {
           setReportCovers(reports.slice(0, 4).map(item => ({
-            img: item.preview_image_url || null,
+            img: item.preview_image_url || '',
             title: item.title,
             date: item.date ? new Date(item.date).toLocaleDateString('zh-CN') : '未知日期',
             url: item.url || `/admin/libraries/${item.repositoryId}/files/${item.id}/viewer`

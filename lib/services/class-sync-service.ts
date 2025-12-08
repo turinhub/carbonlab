@@ -1,6 +1,7 @@
 import {
   createClass as createUserGroup,
   getClasses as getUserGroups,
+  getClass as getUserGroup,
   updateClass as updateUserGroup,
   deleteClass as deleteUserGroup,
   addMembersToUserGroup,
@@ -9,7 +10,7 @@ import {
   CreateClassRequest as CreateUserGroupRequest,
   UpdateClassRequest as UpdateUserGroupRequest
 } from '@/lib/api/classes';
-import { UserGroup } from '@/types/tale';
+import { UserGroup } from '@/lib/types/tale';
 
 // 班级接口（本地）
 export interface Class {
