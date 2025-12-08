@@ -158,6 +158,9 @@ importers:
       pdfmake:
         specifier: ^0.2.20
         version: 0.2.20
+      plyr:
+        specifier: ^3.8.3
+        version: 3.8.3
       plyr-react:
         specifier: ^5.3.0
         version: 5.3.0(plyr@3.8.3)(react@19.2.1)
@@ -167,6 +170,9 @@ importers:
       react:
         specifier: ^19.2.1
         version: 19.2.1
+      react-aptor:
+        specifier: ^2.0.0
+        version: 2.0.0(react@19.2.1)
       react-day-picker:
         specifier: 9.12.0
         version: 9.12.0(react@19.2.1)
