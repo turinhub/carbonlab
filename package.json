@@ -62,6 +62,7 @@
     "plyr": "^3.8.3",
     "plyr-react": "^5.3.0",
     "pptx-preview": "^1.0.6",
+    "prop-types": "^15.8.1",
     "react": "^19.2.1",
     "react-aptor": "^2.0.0",
     "react-day-picker": "9.12.0",
