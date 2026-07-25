@@ -1,4 +1,7 @@
-import { API_CONFIG } from '@/lib/config/api'
+import {
+  loginWithUsernamePasswordAction,
+  validateTaleTokenAction,
+} from '@/lib/actions/tale-auth-actions'
 
 export interface LoginResponse {
   data: {
@@ -21,97 +24,36 @@ export interface LoginResponse {
       expired_at: string
       token: string
     }
-    third_party: any
-    user_roles: any[]
-    user_privileges: any[]
-    user_groups: any[]
+    third_party: Record<string, unknown>
+    user_roles: Array<{
+      role_id: string
+      role_name: string
+      role_type?: string
+    }>
+    user_privileges: Array<{
+      privilege_id: string
+      privilege_name: string
+      privilege_type?: string
+    }>
+    user_groups: unknown[]
   }
   code: number
   msg: string
 }
 
 export interface LoginRequest {
-  app_key: string
   username: string
   password: string
 }
 
 export const authAPI = {
-  // 用户名密码登录
-  async loginWithUsernamePassword(credentials: LoginRequest): Promise<LoginResponse> {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST.TIMEOUT)
-
-    console.log('API调用开始:', {
-      url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LOGIN}`,
-      credentials: { ...credentials, password: '***' }
-    })
-
-    try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LOGIN}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-        signal: controller.signal,
-      })
-
-      clearTimeout(timeoutId)
-
-      console.log('API响应状态:', response.status, response.statusText)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API响应错误:', errorText)
-        throw new Error(`登录失败: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      console.log('API响应数据:', data)
-      
-      if (data.code !== 200) {
-        console.error('API业务错误:', data.msg)
-        throw new Error(data.msg || '登录失败')
-      }
-
-      console.log('API调用成功')
-      return data
-    } catch (error) {
-      clearTimeout(timeoutId)
-      console.error('API调用异常:', error)
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          throw new Error('请求超时，请检查网络连接')
-        }
-        throw error
-      }
-      
-      throw new Error('网络错误，请检查网络连接')
-    }
+  loginWithUsernamePassword(
+    credentials: LoginRequest
+  ): Promise<LoginResponse> {
+    return loginWithUsernamePasswordAction(credentials)
   },
 
-  // 验证token是否有效
-  async validateToken(token: string): Promise<boolean> {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST.TIMEOUT)
-
-    try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.VALIDATE_TOKEN}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-      })
-      
-      clearTimeout(timeoutId)
-      return response.ok
-    } catch (error) {
-      clearTimeout(timeoutId)
-      return false
-    }
-  }
+  validateToken(token: string): Promise<boolean> {
+    return validateTaleTokenAction(token)
+  },
 }

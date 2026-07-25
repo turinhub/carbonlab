@@ -35,13 +35,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { getUsers, createUser, deleteUser, getUserDetail, saveUserRoles } from '@/lib/api/users'
 import { getRoles, createRole, updateRole, deleteRole, updateRolePermissions } from '@/lib/api/roles'
-import { getAppTokens, getAppSecret } from '@/lib/api/app-tokens'
+import { getAppTokens } from '@/lib/api/app-tokens'
 import { getSmsRecords, resendSms, deleteSmsRecord, getSmsRecordDetail } from '@/lib/api/sms'
 import { AppUser, CreateUserRequest } from '@/lib/types/tale'
 import { Role, CreateRoleRequest, UpdateRoleRequest } from '@/lib/types/tale'
 import { SmsRecord } from '@/lib/types/tale'
-import { API_CONFIG } from '@/lib/config/api'
-import { appTokenService } from '@/lib/services/app-token-service'
 
 // 本地定义UI使用的用户类型（扁平化结构）
 interface DashboardUser {
@@ -148,8 +146,6 @@ export default function DashboardHomePage() {
   const [appTokenCurrentPage, setAppTokenCurrentPage] = useState(0)
   const [appTokenPageSize] = useState(10)
   const [totalAppTokens, setTotalAppTokens] = useState(0)
-  const [appSecret, setAppSecret] = useState<string>('')
-  const [showAppSecret, setShowAppSecret] = useState(false)
 
   // 短信管理相关状态
   const [smsRecords, setSmsRecords] = useState<SmsRecord[]>([])
@@ -377,53 +373,13 @@ export default function DashboardHomePage() {
   const fetchUsers = async () => {
     try {
       setUserLoading(true)
-      // 使用配置文件中的APP_KEY
-      const appKey = API_CONFIG.APP.APP_KEY
-      console.log('使用的app_key:', appKey)
       console.log('开始获取用户列表...')
-      
-      // 添加详细的token调试信息
-      console.log('=== Token 调试信息开始 ===')
-      console.log('appTokenService 实例:', appTokenService)
-      
-      // 检查tale token状态
-      try {
-        const taleToken = await appTokenService.getValidTaleToken()
-        console.log('Tale token 状态:', taleToken ? '存在' : '不存在')
-        if (taleToken) {
-          console.log('Tale token 长度:', taleToken.length)
-          console.log('Tale token 前20字符:', taleToken.substring(0, 20) + '...')
-        }
-      } catch (taleError) {
-        console.error('获取Tale token失败:', taleError)
-      }
-      
-      // 尝试获取app token
-      let appToken = null
-      try {
-        appToken = await appTokenService.getValidAppToken(appKey)
-        console.log('App token 获取结果:', appToken ? '成功' : '失败')
-        if (appToken) {
-          console.log('App token 长度:', appToken.length)
-          console.log('App token 前20字符:', appToken.substring(0, 20) + '...')
-        }
-      } catch (appTokenError) {
-        console.error('获取App token失败:', appTokenError)
-      }
-      
-      if (!appToken) {
-        console.error('无法获取有效的App token，跳过API调用')
-        toast.error('无法获取有效的访问令牌，请检查登录状态')
-        return
-      }
-      
-      console.log('=== Token 调试信息结束 ===')
       
       const response = await getUsers({
         page: userCurrentPage,
         size: userPageSize,
         search: userSearchTerm || undefined
-      }, appKey)
+      })
       
       console.log('用户列表API响应:', response)
       console.log('响应类型:', typeof response)
@@ -471,15 +427,12 @@ export default function DashboardHomePage() {
   const fetchRoles = async () => {
     try {
       setRoleLoading(true)
-      // 使用配置文件中的APP_KEY
-      const appKey = API_CONFIG.APP.APP_KEY
-      console.log('获取角色使用的app_key:', appKey)
       console.log('开始获取角色列表...')
       
       const response = await getRoles({
         page: roleCurrentPage,
         size: rolePageSize
-      }, appKey)
+      })
       
       console.log('角色列表API响应:', response)
       // 根据API响应结构设置数据
@@ -502,10 +455,8 @@ export default function DashboardHomePage() {
   const fetchAppTokens = async () => {
     try {
       setAppTokenLoading(true)
-      const appKey = API_CONFIG.APP.APP_KEY
-      console.log('获取App Token使用的app_key:', appKey)
-      
-      const response = await getAppTokens(appKey, {
+
+      const response = await getAppTokens({
         page: appTokenCurrentPage,
         size: appTokenPageSize
       })
@@ -521,31 +472,17 @@ export default function DashboardHomePage() {
     }
   }
 
-  const fetchAppSecret = async () => {
-    try {
-      const appKey = API_CONFIG.APP.APP_KEY
-      const secret = await getAppSecret(appKey)
-      setAppSecret(secret)
-      setShowAppSecret(true)
-    } catch (error) {
-      console.error('获取App Secret失败:', error)
-      toast.error('获取App Secret失败')
-    }
-  }
-
   // 短信管理相关函数
   const fetchSmsRecords = async () => {
     try {
       setSmsLoading(true)
-      const appKey = API_CONFIG.APP.APP_KEY
-      console.log('获取短信记录使用的app_key:', appKey)
-      
+
       const response = await getSmsRecords({
         page: smsCurrentPage,
         size: smsPageSize,
         sms_type: smsTypeFilter === 'all' ? undefined : smsTypeFilter,
         verifiedStatus: verifiedStatusFilter
-      }, appKey)
+      })
       
       console.log('短信记录API响应:', response)
       if (response.data) {
@@ -565,7 +502,7 @@ export default function DashboardHomePage() {
 
   const handleResendSms = async (recordId: string) => {
     try {
-      await resendSms(recordId, API_CONFIG.APP.APP_KEY)
+      await resendSms(recordId)
       toast.success('短信重新发送成功')
       fetchSmsRecords() // 刷新列表
     } catch (error) {
@@ -580,7 +517,7 @@ export default function DashboardHomePage() {
     }
 
     try {
-      await deleteSmsRecord(recordId, API_CONFIG.APP.APP_KEY)
+      await deleteSmsRecord(recordId)
       toast.success('短信记录删除成功')
       fetchSmsRecords() // 刷新列表
     } catch (error) {
@@ -591,7 +528,7 @@ export default function DashboardHomePage() {
 
   const handleViewSmsDetail = async (recordId: string) => {
     try {
-      const record = await getSmsRecordDetail(recordId, API_CONFIG.APP.APP_KEY)
+      const record = await getSmsRecordDetail(recordId)
       setSelectedSmsRecord(record)
       setShowSmsDetail(true)
     } catch (error) {
@@ -604,8 +541,6 @@ export default function DashboardHomePage() {
   const handleCreateUser = async () => {
     console.log('=== 开始创建用户 ===')
     console.log('表单数据:', createUserForm)
-    console.log('使用的APP_KEY:', API_CONFIG.APP.APP_KEY)
-    
     try {
       // 表单验证
       if (!createUserForm.username.trim()) {
@@ -644,7 +579,7 @@ export default function DashboardHomePage() {
       
       console.log('清理后的数据:', cleanData)
       
-      const result = await createUser(cleanData, API_CONFIG.APP.APP_KEY)
+      const result = await createUser(cleanData)
       console.log('✅ 用户创建成功，返回结果:', result)
       
       toast.success('用户创建成功')
@@ -656,8 +591,7 @@ export default function DashboardHomePage() {
       console.error('错误详情:', {
         message: error.message,
         stack: error.stack,
-        formData: createUserForm,
-        appKey: API_CONFIG.APP.APP_KEY
+        formData: createUserForm
       })
       toast.error(`创建用户失败: ${error.message}`)
     }
@@ -700,11 +634,11 @@ export default function DashboardHomePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${useUserStore.getState().token?.token || ''}`,
         },
         body: JSON.stringify({
           user_id: selectedUser.user_id,
-          new_password: resetPasswordForm.newPassword,
-          app_key: API_CONFIG.APP.APP_KEY
+          new_password: resetPasswordForm.newPassword
         })
       })
 
@@ -746,7 +680,7 @@ export default function DashboardHomePage() {
 
     try {
       console.log('开始删除用户，用户ID:', userId)
-      await deleteUser(userId, API_CONFIG.APP.APP_KEY)
+      await deleteUser(userId)
       toast.success('用户删除成功')
       
       // 强制刷新用户列表，清除可能的缓存
@@ -864,7 +798,7 @@ export default function DashboardHomePage() {
         return
       }
       
-      await saveUserRoles(userId, { role_ids: roleIds }, API_CONFIG.APP.APP_KEY)
+      await saveUserRoles(userId, { role_ids: roleIds })
       toast.success('用户角色保存成功')
       setEditUserDialogOpen(false)
       setSelectedRoleIds([]) // 清空选中的角色
@@ -914,7 +848,7 @@ export default function DashboardHomePage() {
       console.log('开始清理历史多角色数据...')
       
       // 获取所有用户
-      const allUsers = await getUsers({ size: 1000 }, API_CONFIG.APP.APP_KEY)
+      const allUsers = await getUsers({ size: 1000 })
       const users = allUsers.content || allUsers.data?.content || allUsers
       
       if (!Array.isArray(users)) {
@@ -939,7 +873,7 @@ export default function DashboardHomePage() {
             
             if (roleId) {
               // 调用API更新用户角色，只保留一个角色
-              await saveUserRoles(user.user_id, { role_ids: [roleId] }, API_CONFIG.APP.APP_KEY)
+              await saveUserRoles(user.user_id, { role_ids: [roleId] })
               console.log(`用户 ${user.username} 角色清理成功，保留角色: ${roleId}`)
               cleanedCount++
             } else {
@@ -984,7 +918,7 @@ export default function DashboardHomePage() {
         return
       }
 
-      await createRole(createRoleForm, API_CONFIG.APP.APP_KEY)
+      await createRole(createRoleForm)
       toast.success('角色创建成功')
       setCreateRoleDialogOpen(false)
       setCreateRoleForm({ role_name: '', role_type: '', remark: '' })
@@ -1019,7 +953,7 @@ export default function DashboardHomePage() {
         return
       }
 
-      await updateRole(selectedRole.role_id, editRoleForm, API_CONFIG.APP.APP_KEY)
+      await updateRole(selectedRole.role_id, editRoleForm)
       toast.success('角色更新成功')
       setEditRoleDialogOpen(false)
       fetchRoles()
@@ -1035,7 +969,7 @@ export default function DashboardHomePage() {
     }
 
     try {
-      await deleteRole(roleId, API_CONFIG.APP.APP_KEY)
+      await deleteRole(roleId)
       toast.success('角色删除成功')
       fetchRoles()
     } catch (error) {
@@ -2898,44 +2832,9 @@ export default function DashboardHomePage() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">App Token 管理</h2>
-                <p className="text-gray-600">管理系统中的应用令牌和密钥</p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={fetchAppSecret}
-                  className="flex items-center gap-2"
-                >
-                  <Key className="w-4 h-4" />
-                  查看 App Secret
-                </Button>
+                <p className="text-gray-600">查看当前应用的令牌状态</p>
               </div>
             </div>
-
-            {/* App Secret 显示对话框 */}
-            <Dialog open={showAppSecret} onOpenChange={setShowAppSecret}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>App Secret</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="app_secret">应用密钥</Label>
-                    <Input
-                      id="app_secret"
-                      value={appSecret}
-                      readOnly
-                      className="font-mono"
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button variant="outline" onClick={() => setShowAppSecret(false)}>
-                      关闭
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
 
             {/* App Token 列表 */}
             <Card>
@@ -2952,22 +2851,19 @@ export default function DashboardHomePage() {
                 ) : (
                   <div className="space-y-4">
                     {appTokens.map((token) => (
-                      <div key={token.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div key={`${token.app_key}-${token.expired_at}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-4">
                           <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
                             <Key className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
                             <div className="flex items-center space-x-2">
-                              <h3 className="font-semibold">{token.name}</h3>
-                              <Badge className={token.is_valid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                {token.is_valid ? '有效' : '无效'}
+                              <h3 className="font-semibold">{token.app_key}</h3>
+                              <Badge className={token.status === 'valid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                {token.status === 'valid' ? '有效' : '无效'}
                               </Badge>
                             </div>
                             <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                              <div className="flex items-center space-x-1">
-                                <span>创建时间: {new Date(token.created_at).toLocaleString('zh-CN')}</span>
-                              </div>
                               {token.expired_at && (
                                 <div className="flex items-center space-x-1">
                                   <span>过期时间: {new Date(token.expired_at).toLocaleString('zh-CN')}</span>
@@ -2976,7 +2872,7 @@ export default function DashboardHomePage() {
                             </div>
                             <div className="mt-2">
                               <p className="text-xs font-mono bg-gray-100 p-2 rounded text-gray-600 break-all">
-                                {token.token.substring(0, 20)}...
+                                {token.token}
                               </p>
                             </div>
                           </div>
@@ -3426,7 +3322,7 @@ export default function DashboardHomePage() {
       })
       
       // 调用API保存权限设置
-      await updateRolePermissions(selectedRoleForPermissions.role_id, permissionsForm, API_CONFIG.APP.APP_KEY)
+      await updateRolePermissions(selectedRoleForPermissions.role_id, permissionsForm)
       
       toast.success('权限设置保存成功')
       setPermissionsDialogOpen(false)

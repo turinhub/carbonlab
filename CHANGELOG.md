@@ -1,5 +1,14 @@
 # Carbon Lab
 
+## v0.1.11 - 20260726
+
+- 将认证、用户、角色、班级、资源、文件、任务和短信能力迁移到 `@turinhub/tale-js-sdk`
+- App Secret、App Token 获取和 Tale 业务调用统一收口到服务端
+- 删除浏览器 App Token 路由、缓存服务、状态存储及 `NEXT_PUBLIC_TALE_APP_KEY`
+- 短信登录改用 Tale 返回的真实用户与 Token，并加强密码修改和管理员重置密码校验
+- 增加 SDK camelCase 与现有页面 snake_case 数据契约之间的兼容适配层
+- 更新 Tale、用户管理、班级和资源同步集成文档
+
 ## v0.1.10 - 20250616
 
 - 调整首页内容

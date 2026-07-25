@@ -1,4 +1,3 @@
-import { appTokenService } from '@/lib/services/app-token-service';
 import { 
   getRepositories, 
   createRepository, 
@@ -53,12 +52,6 @@ interface SyncResult {
 
 // 资源库内容同步服务
 export class ResourceContentSyncService {
-  private appKey: string;
-
-  constructor() {
-    this.appKey = process.env.NEXT_PUBLIC_TALE_APP_KEY || 'oa_HBamFxnA';
-  }
-
   /**
    * 同步资源库内容到 Tale 平台
    * 将本地资源库的详细内容（包括文件列表）同步到对应的 Tale 平台资源库
@@ -89,7 +82,7 @@ export class ResourceContentSyncService {
       };
 
       console.log('📝 更新资源库内容数据:', repositoryData);
-      const updatedRepository = await updateRepository(taleRepositoryId, repositoryData, this.appKey);
+      const updatedRepository = await updateRepository(taleRepositoryId, repositoryData);
       console.log('✅ 资源库内容更新成功:', updatedRepository);
 
       // 更新本地同步状态
@@ -262,7 +255,7 @@ export class ResourceContentSyncService {
    */
   async checkTaleRepositoryExists(taleRepositoryId: string): Promise<boolean> {
     try {
-      const repositories = await getRepositories({ page: 0, size: 1000 }, this.appKey);
+      const repositories = await getRepositories({ page: 0, size: 1000 });
       return repositories.data.content?.some(repo => repo.id === taleRepositoryId) || false;
     } catch (error) {
       console.error('检查 Tale 资源库存在性失败:', error);
@@ -273,4 +266,3 @@ export class ResourceContentSyncService {
 
 // 导出单例实例
 export const resourceContentSyncService = new ResourceContentSyncService();
-

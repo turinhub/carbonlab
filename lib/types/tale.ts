@@ -78,6 +78,8 @@ export interface SmsRecordsResponse {
   };
   code: number;
   msg: string;
+  total?: number;
+  content?: SmsRecord[];
 }
 
 export interface SmsQueryParams {
@@ -160,6 +162,7 @@ export interface UserRole {
   role_type: string;
   role_property: Record<string, unknown>;
   expired_at?: string;
+  remark?: string;
 }
 
 export interface UserPrivilege {
@@ -188,6 +191,10 @@ export interface RolesResponse {
     pageNumber: number;
     pageSize: number;
   };
+  data?: {
+    total: number;
+    content: Role[];
+  };
 }
 
 export interface RolesQueryParams {
@@ -202,6 +209,7 @@ export interface CreateRoleRequest {
   role_type: string;
   role_property?: Record<string, unknown>;
   description?: string;
+  remark?: string;
 }
 
 export interface UpdateRoleRequest {
@@ -210,11 +218,12 @@ export interface UpdateRoleRequest {
   role_type?: string;
   role_property?: Record<string, unknown>;
   description?: string;
+  remark?: string;
 }
 
 // 修复AppUser接口
 export interface AppUser {
-  user_groups: never[];
+  user_groups: UserGroup[];
   app: {
     app_name: string;
     app_key: string;
@@ -253,6 +262,10 @@ export interface UsersResponse {
     };
     pageNumber: number;
     pageSize: number;
+  };
+  data?: {
+    total: number;
+    content: AppUser[];
   };
 }
 

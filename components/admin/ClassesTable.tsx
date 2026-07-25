@@ -51,7 +51,7 @@ export function ClassesTable({ onCreateClass }: ClassesTableProps) {
         page: currentPage,
         size: pageSize,
         search: searchTerm || undefined
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      })
 
       console.log('获取到的班级数据:', response.content)
       setClasses(response.content)
@@ -77,7 +77,7 @@ export function ClassesTable({ onCreateClass }: ClassesTableProps) {
 
   const handleCreateClass = async (classData: CreateClassRequest) => {
     try {
-      await createClass(classData, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      await createClass(classData)
       toast.success('班级创建成功')
       setCreateDialogOpen(false)
       fetchClasses()
@@ -93,7 +93,7 @@ export function ClassesTable({ onCreateClass }: ClassesTableProps) {
     }
 
     try {
-      await deleteClass(classId, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      await deleteClass(classId)
       toast.success('班级删除成功')
       fetchClasses()
     } catch (error) {

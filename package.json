@@ -1,6 +1,6 @@
 {
   "name": "carbonlab",
-  "version": "0.1.0",
+  "version": "0.1.11",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -40,6 +40,7 @@
     "@radix-ui/react-toggle": "^1.1.1",
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
+    "@turinhub/tale-js-sdk": "^2.4.4",
     "@types/xlsx": "^0.0.36",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",

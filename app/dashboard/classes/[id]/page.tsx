@@ -53,7 +53,6 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { getUsers } from '@/lib/api/users';
 import { useUserStore } from '@/lib/stores/user-store';
-import { useAppTokenStore } from '@/lib/stores/app-token-store';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { classSyncService, Class as ClassType } from '@/lib/services/class-sync-service';
 
@@ -155,7 +154,6 @@ export default function ClassDetailPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useUserStore();
-  const { getAppToken } = useAppTokenStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddStudentSidebar, setShowAddStudentSidebar] = useState(false);
@@ -407,7 +405,7 @@ export default function ClassDetailPage() {
       const usersResponse = await getUsers({
         page: currentPage,
         size: pageSize,
-      }, 'oa_HBamFxnA');
+      });
       
       if (usersResponse && usersResponse.content) {
         console.log('✅ 成功加载用户列表:', usersResponse.content.length, '个用户');

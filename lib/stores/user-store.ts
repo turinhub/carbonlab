@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { authAPI, LoginRequest, LoginResponse } from '@/lib/api/auth'
-import { useAppTokenStore } from './app-token-store'
 
 interface User {
   id: string
@@ -170,7 +169,9 @@ export const useUserStore = create<UserStore>((set, get) => {
           latest_login_time: response.data.user.latest_login_time,
           registered_at: response.data.user.registered_at,
           is_frozen: response.data.user.is_frozen,
-          roles: response.data.user_roles?.map(role => role.role_type) || [],
+          roles: response.data.user_roles
+            ?.map(role => role.role_type)
+            .filter((role): role is string => Boolean(role)) || [],
           permissions: response.data.user_privileges?.map(privilege => privilege.toString()) || []
         }
 
@@ -194,14 +195,6 @@ export const useUserStore = create<UserStore>((set, get) => {
 
         console.log('用户状态更新完成，登录成功')
 
-        // 登录成功后自动获取app token
-        try {
-          const appTokenStore = useAppTokenStore.getState()
-          await appTokenStore.refreshAppToken()
-          console.log('应用token获取成功')
-        } catch (appTokenError) {
-          console.warn('获取应用token失败，但不影响用户登录:', appTokenError)
-        }
       } catch (error) {
         console.error('用户store登录失败:', error)
         const errorState = {

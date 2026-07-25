@@ -11,9 +11,9 @@
     ↓
 权限控制组件 (PermissionGuard)
     ↓
-API服务层 (lib/api/*)
+Server Action / Route Handler
     ↓
-令牌服务 (AppTokenService)
+Tale SDK 服务端客户端 (lib/server/tale-client.ts)
     ↓
 Tale后端API
 ```
@@ -25,17 +25,21 @@ Tale后端API
 在 `.env.local` 文件中添加以下配置：
 
 ```bash
-# Tale系统配置
-NEXT_PUBLIC_TALE_BACKEND_URL=https://api.turingue.com
+# Tale SDK 服务端配置
+TALE_BASE_URL=https://api.turingue.com
 TALE_APP_KEY=your_app_key_here
 TALE_APP_SECRET=your_app_secret_here
+
+# 仅用于拼接历史相对文件 URL，不参与认证
+NEXT_PUBLIC_TALE_BACKEND_URL=https://api.turingue.com
 ```
 
 ### 配置说明
 
-- `NEXT_PUBLIC_TALE_BACKEND_URL`: Tale系统的后端API地址
-- `TALE_APP_KEY`: 你的应用密钥
-- `TALE_APP_SECRET`: 你的应用密钥对应的密钥
+- `TALE_BASE_URL`: Tale SDK 服务端请求地址
+- `TALE_APP_KEY`: 服务端使用的应用标识
+- `TALE_APP_SECRET`: 服务端使用的应用密钥，不得暴露给浏览器
+- `NEXT_PUBLIC_TALE_BACKEND_URL`: 仅用于解析历史相对文件 URL
 
 ## 🚀 功能特性
 
@@ -73,7 +77,9 @@ lib/
 ├── types/
 │   └── tale.ts              # Tale系统类型定义
 ├── services/
-│   └── app-token-service.ts # 应用令牌服务
+│   └── server/
+│       ├── tale-client.ts # Tale SDK 服务端客户端
+│       └── tale-legacy-adapters.ts # 历史页面字段兼容层
 ├── api/
 │   ├── users.ts             # 用户管理API
 │   └── roles.ts             # 角色管理API
@@ -140,13 +146,13 @@ const users = await getUsers({
   page: 0,
   size: 10,
   search: '张三'
-}, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+})
 
 // 创建用户
 const newUser = await createUser({
   username: 'newuser',
   phone: '13800138000'
-}, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+})
 ```
 
 ## 🔐 安全特性
@@ -224,4 +230,3 @@ const newUser = await createUser({
 ## 🎉 总结
 
 用户管理和角色权限系统已成功集成到现有框架中，提供了完整的企业级权限管理功能。系统具有良好的扩展性和安全性，可以满足各种复杂的权限管理需求。
-

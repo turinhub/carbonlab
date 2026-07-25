@@ -518,23 +518,20 @@ export default function DocumentEditor({
               const ossKey = url.pathname.substring(1); // 移除开头的 '/'
 
               // 调用API更新文件的oss_url字段
-              if (process.env.NEXT_PUBLIC_TALE_APP_KEY) {
-                await updateFile(
-                  documentId,
-                  {
-                    id: documentId,
-                    folder_id: repository?.id || '',
-                    file_name: file.name,
-                    file_type: document.fileType,
-                    file_attr: document.fileAttr || {},
-                    link_url: '',
-                    content: '',
-                    oss_url: ossKey,
-                    remark: document.remark || '',
-                  },
-                  process.env.NEXT_PUBLIC_TALE_APP_KEY
-                );
-              }
+              await updateFile(
+                documentId,
+                {
+                  id: documentId,
+                  folder_id: repository?.id || '',
+                  file_name: file.name,
+                  file_type: document.fileType,
+                  file_attr: document.fileAttr || {},
+                  link_url: '',
+                  content: '',
+                  oss_url: ossKey,
+                  remark: document.remark || '',
+                }
+              );
 
               console.log('OSS URL已更新到后端:', ossKey);
             } catch (updateError) {
@@ -576,10 +573,6 @@ export default function DocumentEditor({
     fileId: string
   ): Promise<string | null> => {
     try {
-      if (!process.env.NEXT_PUBLIC_TALE_APP_KEY) {
-        throw new Error('未找到应用信息');
-      }
-
       // 动态导入cos-js-sdk-v5以避免SSR问题
       let COS: any;
       try {
@@ -601,8 +594,7 @@ export default function DocumentEditor({
 
       const stsResponse = await getFileSTSCredentials(
         fileId,
-        stsRequest,
-        process.env.NEXT_PUBLIC_TALE_APP_KEY
+        stsRequest
       );
 
       if (!stsResponse?.credentials) {
@@ -677,8 +669,7 @@ export default function DocumentEditor({
 
                 await notifyFileUploadComplete(
                   fileId,
-                  uploadCompleteData,
-                  process.env.NEXT_PUBLIC_TALE_APP_KEY
+                  uploadCompleteData
                 );
                 console.log('文件上传完成通知已发送');
 
@@ -751,11 +742,6 @@ export default function DocumentEditor({
       return;
     }
 
-    if (!process.env.NEXT_PUBLIC_TALE_APP_KEY) {
-      toast.error('未找到应用信息，请重新选择应用');
-      return;
-    }
-
     // 如果是外部链接类型且URL不为空，需要校验URL格式
     if (document.fileType === 'link' && document.externalUrl.trim()) {
       if (!isValidUrl(document.externalUrl)) {
@@ -817,8 +803,7 @@ export default function DocumentEditor({
 
         const response = await updateFile(
           documentId,
-          updateData,
-          process.env.NEXT_PUBLIC_TALE_APP_KEY
+          updateData
         );
 
         if (response) {
@@ -830,8 +815,7 @@ export default function DocumentEditor({
           ) {
             await updateFileContent(
               documentId,
-              document.content,
-              process.env.NEXT_PUBLIC_TALE_APP_KEY
+              document.content
             );
           }
           toast.success('文档更新成功！');
@@ -848,7 +832,7 @@ export default function DocumentEditor({
           file: undefined,
         } as CreateFileRequest;
 
-        const response = await createFile(createData, process.env.NEXT_PUBLIC_TALE_APP_KEY);
+        const response = await createFile(createData);
 
         if (response?.id) {
           setDocumentId(response.id);
@@ -871,8 +855,7 @@ export default function DocumentEditor({
           ) {
             await updateFileContent(
               response.id,
-              document.content,
-              process.env.NEXT_PUBLIC_TALE_APP_KEY
+              document.content
             );
           }
           toast.success('文档创建成功！');

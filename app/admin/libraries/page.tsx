@@ -143,7 +143,7 @@ export default function LibrariesManagement() {
         page: 0,
         size: 100,
       };
-      const response = await getFolders(params, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      const response = await getFolders(params);
       const transformedRepos: Repository[] = response.data.content.map(
         folder => ({
           id: folder.id,
@@ -186,8 +186,7 @@ export default function LibrariesManagement() {
           folder_type: newRepo.folderType,
           folder_attr: newRepo.folderAttr,
           remark: newRepo.remark,
-        },
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        }
       );
       setShowAddRepoDialog(false);
       setNewRepo({
@@ -222,7 +221,7 @@ export default function LibrariesManagement() {
     }
 
     try {
-      await deleteFolder(deletingRepo.id, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      await deleteFolder(deletingRepo.id);
       setIsDeleteDialogOpen(false);
       setDeletingRepo(null);
       setConfirmRepoName('');

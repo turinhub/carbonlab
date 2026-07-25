@@ -133,7 +133,7 @@ export default function DocumentEditorPage() {
 
       try {
         // 加载资料库信息
-        const repoResponse = await getFolderById(libraryId, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+        const repoResponse = await getFolderById(libraryId);
         const mappedRepository: Repository = {
           id: repoResponse.id,
           folder_name: repoResponse.folder_name,
@@ -147,7 +147,7 @@ export default function DocumentEditorPage() {
         setRepository(mappedRepository);
 
         // 加载文件信息
-        const fileResponse = await getFileById(fileId, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+        const fileResponse = await getFileById(fileId);
         setDocument(fileResponse);
       } catch (err) {
         console.error('加载数据失败:', err);
@@ -162,7 +162,7 @@ export default function DocumentEditorPage() {
 
   // 保存文件信息
   const handleSaveDocument = async () => {
-    if (!editedDocument || !process.env.NEXT_PUBLIC_TALE_APP_KEY) {
+    if (!editedDocument) {
       return;
     }
 
@@ -179,8 +179,7 @@ export default function DocumentEditorPage() {
           link_url: editedDocument.link_url,
           content: editedDocument.content,
           remark: editedDocument.remark,
-        },
-        process.env.NEXT_PUBLIC_TALE_APP_KEY
+        }
       );
 
       // 更新本地状态
@@ -204,13 +203,13 @@ export default function DocumentEditorPage() {
 
   // 删除文件
   const handleDeleteDocument = async () => {
-    if (!document?.id || !process.env.NEXT_PUBLIC_TALE_APP_KEY) {
+    if (!document?.id) {
       return;
     }
 
     setSaving(true);
     try {
-      await deleteFile(document.id, process.env.NEXT_PUBLIC_TALE_APP_KEY);
+      await deleteFile(document.id);
       toast.success('文件删除成功');
       // 删除成功后返回文件列表
       router.push(`/admin/libraries/${libraryId}`);
@@ -226,7 +225,7 @@ export default function DocumentEditorPage() {
 
   // 封面图上传处理函数
   const handleCoverImageUpload = async (file: File) => {
-    if (!file || !document?.id || !process.env.NEXT_PUBLIC_TALE_APP_KEY) return;
+    if (!file || !document?.id) return;
 
     // 验证文件类型
     if (!file.type.startsWith('image/')) {
@@ -250,8 +249,7 @@ export default function DocumentEditorPage() {
       // 上传文件
       const result = await uploadFilePreviewImage(
         document.id,
-        file,
-        process.env.NEXT_PUBLIC_TALE_APP_KEY
+        file
       );
 
       // 清理临时URL

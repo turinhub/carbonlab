@@ -50,8 +50,7 @@ export const getCoursesForComponent = async (): Promise<Course[]> => {
     data: Course[];
   }>('/api/courses', { 
     page: 0, 
-    size: 10,
-    app: process.env.NEXT_PUBLIC_TALE_APP_KEY || ''
+    size: 10
   });
 
   return (response.data?.data || []).map(course => ({

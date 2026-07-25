@@ -16,7 +16,6 @@ import {
   UpdateRepositoryRequest,
   Repository
 } from '@/lib/api/resources';
-import { appTokenService } from '@/lib/services/app-token-service';
 
 // 同步结果接口
 export interface SyncResult {
@@ -36,12 +35,6 @@ export interface ConsistencyResult {
 
 // 资源库详情同步服务
 export class ResourceDetailSyncService {
-  private appKey: string;
-
-  constructor(appKey: string = 'oa_HBamFxnA') {
-    this.appKey = appKey;
-  }
-
   /**
    * 同步资源库详情到 Tale 平台
    */
@@ -132,7 +125,7 @@ export class ResourceDetailSyncService {
           file_attr: file.fileAttr || {}
         };
 
-        const updatedFile = await updateFile(file.taleFileId, updateData, this.appKey);
+        const updatedFile = await updateFile(file.taleFileId, updateData);
         console.log('✅ 文件更新成功:', file.fileName);
 
         return {
@@ -154,7 +147,7 @@ export class ResourceDetailSyncService {
           file_attr: file.fileAttr || {}
         };
 
-        const createdFile = await createFile(createData, this.appKey);
+        const createdFile = await createFile(createData);
         console.log('✅ 文件创建成功:', file.fileName);
 
         // 更新本地文件的 Tale ID
@@ -310,7 +303,7 @@ export class ResourceDetailSyncService {
    */
   private async getAllTaleRepositories(): Promise<Repository[]> {
     try {
-      const response = await getRepositories({ page: 0, size: 1000 }, this.appKey);
+      const response = await getRepositories({ page: 0, size: 1000 });
       return response.data.content || [];
     } catch (error) {
       console.error('获取远程资源库失败:', error);
@@ -369,6 +362,5 @@ export class ResourceDetailSyncService {
 
 // 创建默认实例
 export const resourceDetailSyncService = new ResourceDetailSyncService();
-
 
 

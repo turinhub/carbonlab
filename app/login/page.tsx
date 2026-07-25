@@ -25,7 +25,6 @@ import {
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useUserStore } from '@/lib/stores/user-store'
-import { API_CONFIG } from '@/lib/config/api'
 import { sendSmsCode, verifySmsCode } from '@/lib/api/sms'
 import { useSearchParams } from 'next/navigation'
 
@@ -45,7 +44,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [phone, setPhone] = useState('')
   const [phoneCode, setPhoneCode] = useState('')
-  const [smsId, setSmsId] = useState<number | null>(null)
+  const [smsId, setSmsId] = useState<string | null>(null)
   const [countdown, setCountdown] = useState(0)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -96,10 +95,10 @@ function LoginForm() {
       console.log('开始发送短信验证码到:', phone)
       
       // 调用真实的发送验证码API
-      const result = await sendSmsCode(phone, 'login', API_CONFIG.APP.APP_KEY)
+      const result = await sendSmsCode(phone, 'login')
       
       console.log('短信验证码发送成功，记录ID:', result.id)
-      setSmsId(parseInt(result.id))
+      setSmsId(result.id)
       setCountdown(60)
       toast.success('验证码已发送，请注意查收')
 
@@ -148,7 +147,6 @@ function LoginForm() {
       
       // 调用真实的登录API
       await login({
-        app_key: API_CONFIG.APP.APP_KEY, // 从配置文件中获取的app_key
         username: username.trim(),
         password: password.trim()
       })
@@ -199,43 +197,26 @@ function LoginForm() {
       console.log('开始验证短信验证码，记录ID:', smsId, '验证码:', phoneCode)
 
       // 验证短信验证码
-      const isValid = await verifySmsCode(smsId.toString(), phoneCode.trim(), API_CONFIG.APP.APP_KEY)
+      const response = await verifySmsCode(
+        smsId,
+        phoneCode.trim()
+      )
+      const userData = response.data.user
+      setUser({
+        id: userData.user_id,
+        username: userData.username,
+        latest_login_time: userData.latest_login_time,
+        registered_at: userData.registered_at,
+        is_frozen: userData.is_frozen,
+        roles: response.data.user_roles.map(role => role.role_type ?? ''),
+        permissions: response.data.user_privileges.map(
+          privilege => privilege.privilege_name
+        ),
+      })
+      setToken(response.data.token)
 
-      if (isValid) {
-        console.log('短信验证码验证成功')
-
-        // 创建模拟的用户信息（实际应该从API获取）
-        const user = {
-          id: 'sms_user_' + Date.now(),
-          username: phone,
-          email: '',
-          avatar: '',
-          latest_login_time: new Date().toISOString(),
-          registered_at: new Date().toISOString(),
-          is_frozen: false,
-          roles: ['user'],
-          permissions: ['read']
-        }
-
-        const token = {
-          token: 'sms_token_' + Date.now(),
-          scope: 'all',
-          granted_at: new Date().toISOString(),
-          expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        }
-
-        // 设置用户信息和令牌
-        setUser(user)
-        setToken(token)
-
-        toast.success('登录成功')
-        // 登录成功后跳转
-        router.push(redirectPath)
-      } else {
-        console.log('短信验证码验证失败')
-        toast.error('验证码错误或已过期')
-        setError('验证码错误或已过期')
-      }
+      toast.success('登录成功')
+      router.push(redirectPath)
     } catch (error) {
       console.error('验证短信验证码失败:', error)
       setError(error instanceof Error ? error.message : '验证失败，请稍后重试')

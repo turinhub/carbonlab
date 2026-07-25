@@ -11,12 +11,9 @@
 在项目根目录创建 `.env.local` 文件，添加以下配置：
 
 ```bash
-# API配置
-NEXT_PUBLIC_API_BASE_URL=https://api.turingue.com
-NEXT_PUBLIC_APP_KEY=oa_HBamFxnA
-
-# 其他配置
-NEXT_PUBLIC_APP_NAME=whut-carbonlab-dev
+TALE_BASE_URL=https://api.turingue.com
+TALE_APP_KEY=oa_example
+TALE_APP_SECRET=<server-only-secret>
 ```
 
 ### 2. API 端点
@@ -50,7 +47,6 @@ const { login } = useUserStore()
 
 // 登录
 await login({
-  app_key: 'oa_HBamFxnA',
   username: 'carbon',
   password: 'carbon'
 })
@@ -83,7 +79,7 @@ logout()
   "data": {
     "app": {
       "app_name": "whut-carbonlab-dev",
-      "app_key": "oa_HBamFxnA",
+      "app_key": "oa_example",
       "org_id": "0791e08a-0166-4bdb-af4a-7ea5af3d7013",
       "app_id": "a7b10bbe-a8f3-4a1e-8ca3-aad2cec296bc"
     },
@@ -117,11 +113,10 @@ logout()
 
 ### 常见问题
 
-1. **登录失败**: 检查用户名、密码和 app_key 是否正确
+1. **登录失败**: 检查用户名、密码以及服务端 Tale 环境变量是否正确
 2. **网络错误**: 检查网络连接和API地址是否正确
 3. **Token过期**: 重新登录即可
 
 ### 调试信息
 
 在浏览器控制台中可以看到详细的API请求和响应信息，有助于问题排查。
-

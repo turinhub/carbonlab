@@ -87,7 +87,7 @@ export default function UserDetailPage() {
   const loadUserDetail = useCallback(async () => {
     try {
       setLoading(true)
-      const response = await getUserDetail(userId, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      const response = await getUserDetail(userId)
 
       if (response.code !== 200 || !response.data) {
         throw new Error(response.msg || '获取用户详情失败')
@@ -134,7 +134,7 @@ export default function UserDetailPage() {
       const response = await getRoles({
         page: 0,
         size: 100
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      })
 
       setAvailableRoles(response.data.content || [])
     } catch (error) {
@@ -156,7 +156,7 @@ export default function UserDetailPage() {
     try {
       setLoading(true)
       // 这里应该调用更新用户信息的API
-      // await updateUser(userId, basicInfo, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      // await updateUser(userId, basicInfo)
 
       setUserDetail(prev => prev ? { ...prev, ...basicInfo } : null)
       setIsEditMode(false)
@@ -188,11 +188,11 @@ export default function UserDetailPage() {
 
       if (isCurrentlyAssigned) {
         // 移除角色
-        await removeUserRole(userId, { role_ids: [role.role_id] }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+        await removeUserRole(userId, { role_ids: [role.role_id] })
         toast.success(`已移除角色：${roleName}`)
       } else {
         // 添加角色
-        await saveUserRoles(userId, { role_ids: [role.role_id] }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+        await saveUserRoles(userId, { role_ids: [role.role_id] })
         toast.success(`已添加角色：${roleName}`)
       }
 
@@ -227,7 +227,7 @@ export default function UserDetailPage() {
       await updateUserPassword({
         user_id: userId,
         password_encrypted: passwordInfo.newPassword
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      })
 
       toast.success('密码更新成功')
       setPasswordInfo({ newPassword: '', confirmPassword: '' })
@@ -247,7 +247,7 @@ export default function UserDetailPage() {
 
     setDeleteLoading(true)
     try {
-      await deleteUser(userId, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      await deleteUser(userId)
       toast.success('用户删除成功')
       router.push('/admin/users')
     } catch (error) {

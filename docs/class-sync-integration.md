@@ -111,9 +111,9 @@ interface Class {
 ## 配置说明
 
 ### 1. API 配置
-- 使用环境变量 `NEXT_PUBLIC_TALE_BACKEND_URL`
-- 默认值：`https://api.turingue.com`
-- 应用密钥：`oa_HBamFxnA`
+- 服务端使用 `TALE_BASE_URL`、`TALE_APP_KEY` 和 `TALE_APP_SECRET`
+- 浏览器不读取或传递 Tale App Key
+- 默认服务地址：`https://api.turingue.com`
 
 ### 2. 同步策略
 - 创建时自动同步

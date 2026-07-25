@@ -62,9 +62,7 @@ export function CourseCard({ course, className }: CourseCardProps) {
             objectKey = objectKey.substring(1);
           }
 
-          const appKey = process.env.NEXT_PUBLIC_TALE_APP_KEY;
-
-          const presignedResponse = await getAvatarPresignedUrl(objectKey, appKey);
+          const presignedResponse = await getAvatarPresignedUrl(objectKey);
           const url = getProcessedFileUri(presignedResponse.presignedUrl);
           
           setImageUrl(url);

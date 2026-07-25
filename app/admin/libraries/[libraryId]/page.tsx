@@ -204,7 +204,7 @@ export default function LibraryDetailPage() {
   // 加载资料库信息
   const loadRepository = async () => {
     try {
-      const repo = await getFolderById(libraryId, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      const repo = await getFolderById(libraryId);
 
       if (repo) {
         setRepository({
@@ -235,8 +235,7 @@ export default function LibraryDetailPage() {
           folder_id: libraryId,
           keyword: searchTerm || undefined,
           ...params,
-        },
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        }
       );
 
       if (response.code === 200) {
@@ -320,7 +319,7 @@ export default function LibraryDetailPage() {
       };
 
       // 调用API创建文件
-      const newFile = await createFile(createData, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      const newFile = await createFile(createData);
 
       // 关闭对话框并重置表单
       setIsCreateDialogOpen(false);
@@ -364,7 +363,7 @@ export default function LibraryDetailPage() {
 
     try {
       setLoading(true);
-      await deleteFile(deletingDocument.id, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      await deleteFile(deletingDocument.id);
       // 重新加载文档列表
       await loadDocuments();
       setIsDeleteDialogOpen(false);
@@ -390,8 +389,7 @@ export default function LibraryDetailPage() {
           folder_type: repository.folder_type,
           folder_attr: repository.folder_attr || {},
           remark: repository.remark,
-        },
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        }
       );
 
       setIsEditMode(false);
@@ -429,7 +427,7 @@ export default function LibraryDetailPage() {
 
     try {
       setLoading(true);
-      await deleteFolder(repository.id, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      await deleteFolder(repository.id);
       // 删除成功后跳转回资源列表页面
       router.push('/admin/libraries');
     } catch (err) {

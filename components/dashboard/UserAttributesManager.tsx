@@ -21,10 +21,9 @@ interface UserAttribute {
 
 interface UserAttributesManagerProps {
   userId: string
-  appKey: string
 }
 
-export default function UserAttributesManager({ userId, appKey }: UserAttributesManagerProps) {
+export default function UserAttributesManager({ userId }: UserAttributesManagerProps) {
   const [attributes, setAttributes] = useState<UserAttribute[]>([])
   const [loading, setLoading] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -40,7 +39,7 @@ export default function UserAttributesManager({ userId, appKey }: UserAttributes
     try {
       setLoading(true)
       // TODO: 调用真实的API获取用户属性
-      // const response = await getUserAttributes(userId, appKey)
+      // const response = await getUserAttributes(userId)
       // setAttributes(response.data || [])
       
       // 模拟数据
@@ -72,7 +71,7 @@ export default function UserAttributesManager({ userId, appKey }: UserAttributes
 
   useEffect(() => {
     loadAttributes()
-  }, [userId, appKey])
+  }, [userId])
 
   // 添加新属性
   const handleAddAttribute = async () => {
@@ -83,7 +82,7 @@ export default function UserAttributesManager({ userId, appKey }: UserAttributes
 
     try {
       // TODO: 调用真实的API添加属性
-      // await addUserAttribute(userId, appKey, newAttribute)
+      // await addUserAttribute(userId, newAttribute)
       
       const attribute: UserAttribute = {
         id: Date.now().toString(),
@@ -108,7 +107,7 @@ export default function UserAttributesManager({ userId, appKey }: UserAttributes
   const handleUpdateAttribute = async (id: string, updates: Partial<UserAttribute>) => {
     try {
       // TODO: 调用真实的API更新属性
-      // await updateUserAttribute(userId, appKey, id, updates)
+      // await updateUserAttribute(userId, id, updates)
       
       setAttributes(prev => prev.map(attr => 
         attr.id === id 
@@ -127,7 +126,7 @@ export default function UserAttributesManager({ userId, appKey }: UserAttributes
   const handleDeleteAttribute = async (id: string) => {
     try {
       // TODO: 调用真实的API删除属性
-      // await deleteUserAttribute(userId, appKey, id)
+      // await deleteUserAttribute(userId, id)
       
       setAttributes(prev => prev.filter(attr => attr.id !== id))
       toast.success("属性删除成功")

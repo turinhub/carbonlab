@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FileText, Calendar, HardDrive, AlertCircle } from 'lucide-react';
 import { getOssMetadata, type OssMetadata } from '@/lib/api/files';
-import { useTale } from '@/lib/contexts/TaleContext';
 
 interface CurrentFileInfoProps {
   ossUrl?: string;
@@ -69,11 +68,10 @@ export default function CurrentFileInfo({
   const [metadata, setMetadata] = useState<OssMetadata | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { currentApp } = useTale();
 
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (!ossUrl || !currentApp?.app_key) {
+      if (!ossUrl) {
         return;
       }
 
@@ -98,7 +96,7 @@ export default function CurrentFileInfo({
       setError(null);
 
       try {
-        const data = await getOssMetadata(ossKey, currentApp.app_key);
+        const data = await getOssMetadata(ossKey);
         setMetadata(data);
       } catch (err) {
         console.error('获取文件元数据失败:', err);
@@ -109,7 +107,7 @@ export default function CurrentFileInfo({
     };
 
     fetchMetadata();
-  }, [ossUrl, currentApp?.app_key]);
+  }, [ossUrl]);
 
   // 如果没有OSS URL，不显示组件
   if (!ossUrl) {

@@ -145,7 +145,7 @@ export default function ClassMembers() {
     try {
       setClassLoading(true);
       // 调用API获取班级详情
-      const classData = await getUserGroup(classId, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      const classData = await getUserGroup(classId);
 
       setClassInfo(classData);
       // 更新表单默认值
@@ -170,8 +170,7 @@ export default function ClassMembers() {
         const response = await getUserGroupMembers(
           classId,
           page,
-          membersPageSize,
-          process.env.NEXT_PUBLIC_TALE_APP_KEY!
+          membersPageSize
         );
         console.log('getUserGroupMembers response:', response);
         if (response && response.data && Array.isArray(response.data.content)) {
@@ -217,8 +216,7 @@ export default function ClassMembers() {
         {
           page: currentPage,
           size: pageSize,
-        },
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        }
       );
       setUsersData(response);
     } catch (error) {
@@ -253,8 +251,7 @@ export default function ClassMembers() {
     try {
       await updateUserGroup(
         classId,
-        values as UpdateUserGroupRequest,
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        values as UpdateUserGroupRequest
       );
       toast.success(`班级 "${values.name}" 已成功更新。`);
       setIsEditingClass(false);
@@ -309,7 +306,7 @@ export default function ClassMembers() {
     }
 
     try {
-      await addMembersToUserGroup(classId, newMemberIds, process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      await addMembersToUserGroup(classId, newMemberIds);
       toast.success(`已成功添加 ${newMemberIds.length} 个成员到班级`);
       setShowAddMemberSidebar(false);
       setCurrentPage(0);
@@ -390,7 +387,7 @@ export default function ClassMembers() {
   //单独移除成员
   const handleRemoveMember = async (memberId: string, memberName: string) => {
     try {
-      await removeMembersFromUserGroup(classId, [memberId], process.env.NEXT_PUBLIC_TALE_APP_KEY!);
+      await removeMembersFromUserGroup(classId, [memberId]);
       toast.success(`已成功从班级移除成员 "${memberName}"`);
       // 重新加载成员列表，保持当前页
       loadMembers(membersCurrentPage);
@@ -409,8 +406,7 @@ export default function ClassMembers() {
     try {
       await removeMembersFromUserGroup(
         classId,
-        selectedMembersForRemoval,
-        process.env.NEXT_PUBLIC_TALE_APP_KEY!
+        selectedMembersForRemoval
       );
       toast.success(
         `已成功从班级移除 ${selectedMembersForRemoval.length} 个成员`

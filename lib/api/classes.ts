@@ -1,371 +1,191 @@
-import { appTokenService } from '@/lib/services/app-token-service';
+'use server'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_TALE_BACKEND_URL || 'https://api.turingue.com';
+import type { UserGroupInfo, UserGroupMember as SdkUserGroupMember } from '@turinhub/tale-js-sdk'
+import { createTaleServerAppClient } from '@/lib/server/tale-client'
 
 export interface Class {
-  groupId: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  remark: string;
-  memberCount: number;
+  groupId: string
+  name: string
+  description: string
+  createdAt: string
+  updatedAt: string
+  remark: string
+  memberCount: number
 }
 
-export interface UserGroup {
-  groupId: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  remark: string;
-  memberCount: number;
-}
+export type UserGroup = Class
 
 export interface ClassesResponse {
-  total: number;
-  content: Class[];
+  total: number
+  content: Class[]
   pageable: {
-    sort: { orders: unknown[] };
-    pageNumber: number;
-    pageSize: number;
-  };
+    sort: { orders: unknown[] }
+    pageNumber: number
+    pageSize: number
+  }
 }
 
 export interface ClassesQueryParams {
-  page: number;
-  size: number;
-  keyword?: string;
-  search?: string;
+  page: number
+  size: number
+  keyword?: string
+  search?: string
 }
 
 export interface CreateClassRequest {
-  name: string;
-  description?: string;
-  remark?: string;
+  name: string
+  description?: string
+  remark?: string
 }
 
 export interface UpdateClassRequest {
-  name?: string;
-  description?: string;
-  remark?: string;
+  name?: string
+  description?: string
+  remark?: string
 }
 
-// 获取班级列表
+export type UpdateUserGroupRequest = UpdateClassRequest
+
+function toClass(group: UserGroupInfo): Class {
+  return {
+    groupId: group.groupId,
+    name: group.name,
+    description: group.description ?? '',
+    createdAt: group.createdAt,
+    updatedAt: group.updatedAt,
+    remark: group.remark ?? '',
+    memberCount: group.memberCount,
+  }
+}
+
 export async function getClasses(
-  params?: ClassesQueryParams,
-  appKey?: string
+  params?: ClassesQueryParams
 ): Promise<ClassesResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
+  const result = await createTaleServerAppClient().userGroups.list({
+    page: params?.page,
+    size: params?.size,
+    keyword: params?.keyword ?? params?.search,
+  })
+  return {
+    total: result.total,
+    content: result.content.map(toClass),
+    pageable: {
+      sort: { orders: result.sort },
+      pageNumber: result.page,
+      pageSize: result.size,
+    },
   }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const queryParams = new URLSearchParams();
-  if (params?.page !== undefined)
-    queryParams.append('page', params.page.toString());
-  if (params?.size !== undefined)
-    queryParams.append('size', params.size.toString());
-  if (params?.keyword) queryParams.append('keyword', params.keyword);
-  if (params?.search) queryParams.append('search', params.search);
-
-  const response = await fetch(
-    `${API_BASE_URL}/user-group/v1?${queryParams}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-t-token': appToken,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
 }
 
-// 获取单个班级详情
 export async function getClass(
-  classId: string,
-  appKey?: string
-): Promise<Class & { memberCount?: number }> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/user-group/v1/${classId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
-}
-
-// 创建班级
-export async function createClass(
-  classData: CreateClassRequest,
-  appKey?: string
+  classId: string
 ): Promise<Class> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/user-group/v1`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify(classData),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
+  return toClass(await createTaleServerAppClient().userGroups.get(classId))
 }
 
-// 更新班级
+export async function createClass(
+  classData: CreateClassRequest
+): Promise<Class> {
+  const result = await createTaleServerAppClient().userGroups.create(classData)
+  return toClass(result)
+}
+
 export async function updateClass(
   classId: string,
-  classData: UpdateClassRequest,
-  appKey?: string
+  classData: UpdateClassRequest
 ): Promise<Class> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/user-group/v1/${classId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify(classData),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
+  const result = await createTaleServerAppClient().userGroups.update(
+    classId,
+    classData
+  )
+  return toClass(result)
 }
 
-// 获取用户组详情（别名函数，用于向后兼容）
 export async function getUserGroup(
-  groupId: string,
-  appKey?: string
+  groupId: string
 ): Promise<UserGroup> {
-  return await getClass(groupId, appKey);
+  return getClass(groupId)
 }
 
-// 更新用户组（别名函数，用于向后兼容）
 export async function updateUserGroup(
   groupId: string,
-  groupData: UpdateClassRequest,
-  appKey?: string
+  groupData: UpdateClassRequest
 ): Promise<UserGroup> {
-  return await updateClass(groupId, groupData, appKey);
+  return updateClass(groupId, groupData)
 }
 
-// 删除班级
 export async function deleteClass(
-  classId: string,
-  appKey?: string
+  classId: string
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/user-group/v1/${classId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  await createTaleServerAppClient().userGroups.delete(classId)
 }
 
-// 获取班级成员列表
 export interface UserGroupMember {
-  userId: string;
-  username: string;
-  phone: string;
-  isFrozen: boolean;
-  createdAt: string;
+  userId: string
+  username: string
+  phone: string
+  isFrozen: boolean
+  createdAt: string
 }
 
 export interface UserGroupMembersResponse {
   data: {
-    total: number;
-    content: UserGroupMember[];
+    total: number
+    content: UserGroupMember[]
     pageable: {
-      sort: {
-        orders: unknown[];
-      };
-      pageNumber: number;
-      pageSize: number;
-    };
-  };
-  code: number;
-  msg: string;
+      sort: { orders: unknown[] }
+      pageNumber: number
+      pageSize: number
+    }
+  }
+  code: number
+  msg: string
 }
 
-// 获取班级成员列表（支持分页）
+function toMember(member: SdkUserGroupMember): UserGroupMember {
+  return {
+    userId: member.userId,
+    username: member.username,
+    phone: member.phone,
+    isFrozen: member.isFrozen,
+    createdAt: member.createdAt,
+  }
+}
+
 export async function getUserGroupMembers(
   groupId: string,
-  page: number = 0,
-  size: number = 10,
-  appKey?: string
+  page = 0,
+  size = 10
 ): Promise<UserGroupMembersResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const url = new URL(`${API_BASE_URL}/user-group/v1/${groupId}/members`);
-  url.searchParams.append('page', page.toString());
-  url.searchParams.append('size', size.toString());
-
-  const response = await fetch(url.toString(), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
+  const result = await createTaleServerAppClient().userGroups.listMembers(groupId, {
+    page,
+    size,
+  })
+  return {
+    data: {
+      total: result.total,
+      content: result.content.map(toMember),
+      pageable: {
+        sort: { orders: result.sort },
+        pageNumber: result.page,
+        pageSize: result.size,
+      },
     },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('API Error:', errorText);
-    throw new Error(
-      `HTTP error! status: ${response.status}, message: ${errorText}`
-    );
+    code: 200,
+    msg: 'OK',
   }
-
-  const result = await response.json();
-  return result;
 }
 
-// 添加成员到班级
 export async function addMembersToUserGroup(
   groupId: string,
-  userIds: string[],
-  appKey?: string
+  userIds: string[]
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/user-group/v1/${groupId}/members`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-t-token': appToken,
-      },
-      body: JSON.stringify({
-        user_ids: userIds,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Add members API Error:', errorText);
-    throw new Error(
-      `HTTP error! status: ${response.status}, message: ${errorText}`
-    );
-  }
+  await createTaleServerAppClient().userGroups.addMembers(groupId, { userIds })
 }
 
-// 移除班级成员
 export async function removeMembersFromUserGroup(
   groupId: string,
-  userIds: string[],
-  appKey?: string
+  userIds: string[]
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/user-group/v1/${groupId}/members`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-t-token': appToken,
-      },
-      body: JSON.stringify({
-        user_ids: userIds,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Remove members API Error:', errorText);
-    throw new Error(
-      `HTTP error! status: ${response.status}, message: ${errorText}`
-    );
-  }
+  await createTaleServerAppClient().userGroups.removeMembers(groupId, { userIds })
 }

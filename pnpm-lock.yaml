@@ -101,6 +101,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.6
         version: 1.1.8(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@turinhub/tale-js-sdk':
+        specifier: ^2.4.4
+        version: 2.4.4
       '@types/xlsx':
         specifier: ^0.0.36
         version: 0.0.36
@@ -1411,6 +1414,9 @@ packages:
 
   '@turf/union@6.5.0':
     resolution: {integrity: sha512-igYWCwP/f0RFHIlC2c0SKDuM/ObBaqSljI3IdV/x71805QbIvY/BYGcJdyNcgEA6cylIGl/0VSlIbpJHZ9ldhw==}
+
+  '@turinhub/tale-js-sdk@2.4.4':
+    resolution: {integrity: sha512-pL0/qE1+QXXwKpmvYERC0miC/SWhjjnquyq4rSC1leQzX3fOs421IZAzqIwKkr292KoJqDJih0qnJ7GqvKtE6w==}
 
   '@types/d3-array@3.2.1':
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
@@ -4667,6 +4673,8 @@ snapshots:
       '@turf/helpers': 6.5.0
       '@turf/invariant': 6.5.0
       polygon-clipping: 0.15.7
+
+  '@turinhub/tale-js-sdk@2.4.4': {}
 
   '@types/d3-array@3.2.1': {}
 

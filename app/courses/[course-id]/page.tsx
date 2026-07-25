@@ -94,7 +94,7 @@ export default function LearningUnit({
             objectKey = objectKey.substring(1);
           }
 
-          const presignedResponse = await getAvatarPresignedUrl(objectKey, process.env.NEXT_PUBLIC_TALE_APP_KEY);
+          const presignedResponse = await getAvatarPresignedUrl(objectKey);
           const url = getProcessedFileUri(presignedResponse.presignedUrl);
           setImageUrl(url);
         } catch (error) {

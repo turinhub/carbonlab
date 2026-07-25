@@ -52,7 +52,7 @@ export function UsersTable({ onCreateUser }: UsersTableProps) {
         page: currentPage,
         size: pageSize,
         search: searchTerm || undefined
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      })
 
       console.log('获取到的用户数据:', response.content)
       setUsers(response.content)
@@ -70,7 +70,7 @@ export function UsersTable({ onCreateUser }: UsersTableProps) {
       const response = await getRoles({
         page: 0,
         size: 100
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      })
 
       setRoles(response.data.content)
     } catch (error) {
@@ -85,12 +85,12 @@ export function UsersTable({ onCreateUser }: UsersTableProps) {
 
   const handleCreateUser = async (userData: CreateUserRequest & { role_ids: string[] }) => {
     try {
-      const createdUser = await createUser(userData, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      const createdUser = await createUser(userData)
 
       // 如果选择了角色，则为新用户分配角色
       if (userData.role_ids.length > 0) {
         try {
-          await saveUserRoles(createdUser.user.user_id, { role_ids: userData.role_ids }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+          await saveUserRoles(createdUser.user.user_id, { role_ids: userData.role_ids })
           toast.success('用户创建成功并已分配角色')
         } catch (roleError) {
           console.error('分配角色失败:', roleError)
@@ -114,7 +114,7 @@ export function UsersTable({ onCreateUser }: UsersTableProps) {
     }
 
     try {
-      await deleteUser(userId, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      await deleteUser(userId)
       toast.success('用户删除成功')
       fetchUsers()
     } catch (error) {
@@ -130,7 +130,7 @@ export function UsersTable({ onCreateUser }: UsersTableProps) {
 
   const handleSaveUserRoles = async (userId: string, roleIds: string[]) => {
     try {
-      await saveUserRoles(userId, { role_ids: roleIds }, process.env.NEXT_PUBLIC_TALE_APP_KEY!)
+      await saveUserRoles(userId, { role_ids: roleIds })
       toast.success('用户角色保存成功')
       setEditDialogOpen(false)
       fetchUsers()

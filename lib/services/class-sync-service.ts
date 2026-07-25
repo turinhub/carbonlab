@@ -41,12 +41,6 @@ export interface SyncResult {
 
 // 班级同步服务
 export class ClassSyncService {
-  private appKey: string;
-
-  constructor(appKey: string) {
-    this.appKey = appKey;
-  }
-
   /**
    * 同步单个班级到 Tale 平台
    */
@@ -85,7 +79,7 @@ export class ClassSyncService {
 
       console.log('📝 创建用户组数据:', groupData);
 
-      const createdGroup = await createUserGroup(groupData, this.appKey);
+      const createdGroup = await createUserGroup(groupData);
       console.log('✅ 用户组创建成功:', createdGroup);
 
       // 如果有学生，添加到用户组
@@ -129,7 +123,7 @@ export class ClassSyncService {
 
       console.log('📝 更新用户组数据:', groupData);
 
-      const updatedGroup = await updateUserGroup(classData.taleGroupId, groupData, this.appKey);
+      const updatedGroup = await updateUserGroup(classData.taleGroupId, groupData);
       console.log('✅ 用户组更新成功:', updatedGroup);
 
       // 同步学生到用户组
@@ -164,7 +158,7 @@ export class ClassSyncService {
       }
 
       // 获取当前用户组成员
-      const currentMembers = await getUserGroupMembers(groupId, 0, 1000, this.appKey);
+      const currentMembers = await getUserGroupMembers(groupId, 0, 1000);
       const currentMemberIds = currentMembers.data.content.map(member => member.userId);
 
       // 找出需要添加的学生
@@ -176,13 +170,13 @@ export class ClassSyncService {
       // 添加新学生
       if (studentsToAdd.length > 0) {
         console.log('➕ 添加学生到用户组:', studentsToAdd);
-        await addMembersToUserGroup(groupId, studentsToAdd, this.appKey);
+        await addMembersToUserGroup(groupId, studentsToAdd);
       }
 
       // 移除不在班级中的学生
       if (studentsToRemove.length > 0) {
         console.log('➖ 从用户组移除学生:', studentsToRemove);
-        await removeMembersFromUserGroup(groupId, studentsToRemove, this.appKey);
+        await removeMembersFromUserGroup(groupId, studentsToRemove);
       }
 
       console.log('✅ 学生同步完成');
@@ -199,7 +193,7 @@ export class ClassSyncService {
     try {
       console.log('🗑️ 删除用户组:', taleGroupId);
       
-      await deleteUserGroup(taleGroupId, this.appKey);
+      await deleteUserGroup(taleGroupId);
       
       return {
         success: true,
@@ -261,7 +255,7 @@ export class ClassSyncService {
       }
 
       // 获取用户组信息
-      const groupInfo = await getUserGroup(classData.taleGroupId, this.appKey);
+      const groupInfo = await getUserGroup(classData.taleGroupId);
       
       return {
         isSynced: true,
@@ -280,7 +274,7 @@ export class ClassSyncService {
    */
   async getAllTaleGroups(): Promise<UserGroup[]> {
     try {
-      const response = await getUserGroups({ page: 0, size: 1000 }, this.appKey);
+      const response = await getUserGroups({ page: 0, size: 1000 });
       return response.content;
     } catch (error) {
       console.error('❌ 获取用户组列表失败:', error);
@@ -327,7 +321,7 @@ export class ClassSyncService {
       // 获取每个用户组的成员信息
       for (const pulledClass of pulledClasses) {
         try {
-          const members = await getUserGroupMembers(pulledClass.taleGroupId!, 0, 1000, this.appKey);
+          const members = await getUserGroupMembers(pulledClass.taleGroupId!, 0, 1000);
           pulledClass.students = members.data.content.map(member => member.userId);
           pulledClass.currentStudents = members.data.content.length;
         } catch (error) {
@@ -573,4 +567,4 @@ export class ClassSyncService {
 }
 
 // 创建默认实例
-export const classSyncService = new ClassSyncService('oa_HBamFxnA');
+export const classSyncService = new ClassSyncService();

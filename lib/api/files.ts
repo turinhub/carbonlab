@@ -1,561 +1,241 @@
-import { appTokenService } from '@/lib/services/app-token-service';
+'use server'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_TALE_BACKEND_URL || 'https://api.turingue.com';
+import type { FileType } from '@turinhub/tale-js-sdk'
+import { createTaleServerAppClient } from '@/lib/server/tale-client'
+import { toLegacyFile } from '@/lib/server/tale-legacy-adapters'
 
-// 文件接口类型
 export interface FileData {
-  id: string;
-  folder_id: string;
-  file_name: string;
-  file_type: string;
-  file_attr?: object;
-  link_url?: string;
-  content?: string;
-  oss_url?: string;
-  preview_image_url?: string;
-  remark?: string;
-  created_at: string;
-  updated_at: string;
+  id: string
+  folder_id: string
+  file_name: string
+  file_type: string
+  file_attr?: object
+  link_url?: string
+  content?: string
+  oss_url?: string
+  preview_image_url?: string
+  remark?: string
+  created_at: string
+  updated_at: string
 }
 
-// API响应类型
 export interface FileResponse {
-  data: FileData;
-  code: number;
-  msg: string;
+  data: FileData
+  code: number
+  msg: string
 }
 
-// 创建文件请求类型
 export interface CreateFileRequest {
-  file?: File;
-  folder_id: string;
-  file_name: string;
-  file_type: string;
-  file_attr?: object;
-  link_url?: string;
-  content?: string;
-  oss_url?: string;
-  remark?: string;
+  file?: File
+  folder_id: string
+  file_name: string
+  file_type: string
+  file_attr?: object
+  link_url?: string
+  content?: string
+  oss_url?: string
+  remark?: string
 }
 
-// 更新文件请求类型
 export interface UpdateFileRequest {
-  file?: File;
-  id: string;
-  folder_id: string;
-  file_name: string;
-  file_type: string;
-  file_attr?: object;
-  link_url?: string;
-  content?: string;
-  oss_url?: string;
-  remark?: string;
+  file?: File
+  id: string
+  folder_id: string
+  file_name: string
+  file_type: string
+  file_attr?: object
+  link_url?: string
+  content?: string
+  oss_url?: string
+  remark?: string
 }
 
-// 创建文件
 export async function createFile(
-  data: CreateFileRequest,
-  appKey?: string
+  data: CreateFileRequest
 ): Promise<FileData> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      folder_id: data.folder_id,
-      file_name: data.file_name,
-      file_type: data.file_type,
-      file_attr: data.file_attr || {},
-      link_url: data.link_url || '',
-      oss_url: data.oss_url || '',
-      remark: data.remark || '',
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '创建文件失败');
-  }
-  return result.data;
+  const result = await createTaleServerAppClient().cms.createFile({
+    folderId: data.folder_id,
+    fileName: data.file_name,
+    fileType: data.file_type as FileType,
+    fileAttr: data.file_attr as Record<string, unknown> | undefined,
+    linkUrl: data.link_url,
+    content: data.content,
+    remark: data.remark,
+  })
+  return toLegacyFile(result)
 }
 
-// 更新文件
 export async function updateFile(
   id: string,
-  data: UpdateFileRequest,
-  appKey?: string
+  data: UpdateFileRequest
 ): Promise<FileData> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      folder_id: data.folder_id,
-      file_name: data.file_name,
-      file_type: data.file_type,
-      file_attr: data.file_attr || {},
-      link_url: data.link_url || '',
-      remark: data.remark || '',
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '更新文件失败');
-  }
-  return result.data;
+  const result = await createTaleServerAppClient().cms.updateFile(id, {
+    folderId: data.folder_id,
+    fileName: data.file_name,
+    fileType: data.file_type as FileType,
+    fileAttr: data.file_attr as Record<string, unknown> | undefined,
+    linkUrl: data.link_url,
+    content: data.content,
+    remark: data.remark,
+  })
+  return toLegacyFile(result)
 }
 
-// 更新文件内容
 export async function updateFileContent(
   id: string,
-  content: string,
-  appKey?: string
+  content: string
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${id}/content`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      content: content,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
+  await createTaleServerAppClient().cms.updateFileContent(id, content)
 }
 
-// 文件列表查询参数类型
 export interface FilesQueryParams {
-  page?: number;
-  size?: number;
-  sortBy?: string;
-  folder_id?: string;
-  keyword?: string;
+  page?: number
+  size?: number
+  sortBy?: string
+  folder_id?: string
+  keyword?: string
 }
 
-// 文件列表响应类型
 export interface FilesResponse {
-  code: number;
-  msg: string;
+  code: number
+  msg: string
   data: {
-    content: FileData[];
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-  };
+    content: FileData[]
+    totalElements: number
+    totalPages: number
+    size: number
+    number: number
+  }
 }
 
-// 获取文件列表
 export async function getFiles(
-  params: FilesQueryParams = {},
-  appKey?: string
+  params: FilesQueryParams = {}
 ): Promise<FilesResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
   if (!params.folder_id) {
-    throw new Error('folder_id is required for getting files');
+    throw new Error('folder_id is required for getting files')
   }
-
-  const searchParams = new URLSearchParams();
-
-  if (params.page !== undefined)
-    searchParams.append('page', params.page.toString());
-  if (params.size !== undefined)
-    searchParams.append('size', params.size.toString());
-  if (params.sortBy) searchParams.append('sortBy', params.sortBy);
-  if (params.keyword) searchParams.append('keyword', params.keyword);
-
-  const response = await fetch(
-    `${API_BASE_URL}/cms/v1/folders/${params.folder_id}/files?${searchParams.toString()}`,
-    {
-      method: 'GET',
-      headers: {
-        'x-t-token': appToken,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
+  const result = await createTaleServerAppClient().cms.listFiles({
+    folderId: params.folder_id,
+    page: params.page,
+    size: params.size,
+    sort: params.sortBy,
+  })
+  return {
+    code: 200,
+    msg: 'OK',
+    data: {
+      content: result.content.map(toLegacyFile),
+      totalElements: result.total,
+      totalPages: result.totalPages,
+      size: result.size,
+      number: result.page,
+    },
   }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取文件列表失败');
-  }
-  return result;
 }
 
-// 根据ID获取文件详情
 export async function getFileById(
-  id: string,
-  appKey?: string
+  id: string
 ): Promise<FileData> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${id}`, {
-    method: 'GET',
-    headers: {
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取文件详情失败');
-  }
-  return result.data;
+  return toLegacyFile(await createTaleServerAppClient().cms.getFile(id))
 }
 
-// 删除文件
-export async function deleteFile(id: string, appKey?: string): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '删除文件失败');
-  }
+export async function deleteFile(
+  id: string
+): Promise<void> {
+  await createTaleServerAppClient().cms.deleteFile(id)
 }
 
-// STS凭证请求类型
 export interface FileSTSCredentialsRequest {
-  file_extension: string;
-  durationSeconds?: number;
+  file_extension: string
+  durationSeconds?: number
 }
 
-// STS凭证响应类型
 export interface FileSTSCredentialsResponse {
   credentials: {
-    tmpSecretId: string;
-    tmpSecretKey: string;
-    sessionToken: string;
-  };
-  allowPrefix: string;
-  startTime: number;
-  expiredTime: number;
-  bucket: string;
-  region: string;
+    tmpSecretId: string
+    tmpSecretKey: string
+    sessionToken: string
+  }
+  allowPrefix: string
+  startTime: number
+  expiredTime: number
+  bucket: string
+  region: string
 }
 
-// 获取文件上传STS凭证
 export async function getFileSTSCredentials(
   fileId: string,
-  data: FileSTSCredentialsRequest,
-  appKey?: string
+  data: FileSTSCredentialsRequest
 ): Promise<FileSTSCredentialsResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${fileId}/sts-credentials`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      file_extension: data.file_extension,
-      duration_seconds: data.durationSeconds || 1800,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取STS凭证失败');
-  }
-  return result.data;
+  return createTaleServerAppClient().cms.getFileStsCredentials(
+    fileId,
+    data.file_extension,
+    data.durationSeconds
+  )
 }
 
-// 文件上传完成请求类型
 export interface FileUploadCompleteRequest {
-  oss_key: string;
-  file_size: number;
-  etag: string;
+  oss_key: string
+  file_size: number
+  etag: string
 }
 
-// OSS元数据响应类型
 export interface OssMetadata {
-  content_type: string;
-  content_length: number;
-  last_modified: string;
-  etag: string;
+  content_type: string
+  content_length: number
+  last_modified: string
+  etag: string
 }
 
-// 预签名URL响应类型
 export interface PresignedUrlResponse {
-  presigned_url: string;
+  presigned_url: string
 }
 
-// 获取文件预签名URL
 export async function getFilePresignedUrl(
-  fileId: string,
-  appKey?: string
+  fileId: string
 ): Promise<PresignedUrlResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${fileId}/presigned-url`, {
-    method: 'GET',
-    headers: {
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取预签名URL失败');
-  }
-  return result.data;
+  const result = await createTaleServerAppClient().cms.getFilePresignedUrl(fileId)
+  return { presigned_url: result.presignedUrl }
 }
 
-// 文件上传完成通知
 export async function notifyFileUploadComplete(
   fileId: string,
-  data: FileUploadCompleteRequest,
-  appKey?: string
+  data: FileUploadCompleteRequest
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${fileId}/upload-complete`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      oss_key: data.oss_key,
-      file_size: data.file_size,
-      etag: data.etag,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '上传完成通知失败');
-  }
+  await createTaleServerAppClient().cms.fileUploadComplete(fileId, {
+    ossKey: data.oss_key,
+    fileSize: data.file_size,
+    etag: data.etag,
+  })
 }
 
-// 获取OSS文件元数据
 export async function getOssMetadata(
-  ossKey: string,
-  appKey?: string
+  ossKey: string
 ): Promise<OssMetadata> {
-  if (!appKey) {
-    throw new Error('No app key provided');
+  const result = await createTaleServerAppClient().cms.getOssMetadata(ossKey)
+  return {
+    content_type: result.contentType ?? '',
+    content_length: result.contentLength ?? 0,
+    last_modified: result.lastModified ?? '',
+    etag: result.etag ?? '',
   }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/oss-metadata`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify({
-      oss_key: ossKey,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取OSS元数据失败');
-  }
-  return result.data;
 }
 
-// 上传预览图片响应类型
 export interface UploadPreviewImageResponse {
-  code: number;
-  msg: string;
+  code: number
+  msg: string
   data: {
-    preview_image_url: string;
-  };
+    preview_image_url: string
+  }
 }
 
-// 上传文件预览图片
 export async function uploadFilePreviewImage(
   fileId: string,
-  imageFile: File,
-  appKey?: string
+  imageFile: File
 ): Promise<UploadPreviewImageResponse['data']> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const formData = new FormData();
-  formData.append('file', imageFile);
-
-  const response = await fetch(`${API_BASE_URL}/cms/v1/files/${fileId}/preview-image`, {
-    method: 'POST',
-    headers: {
-      'x-t-token': appToken,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorResult = await response.json().catch(() => null);
-    const errorMessage =
-      errorResult?.msg || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
-
-  const result = await response.json();
-  if (result.code !== 200) {
-    throw new Error(result.msg || '上传预览图片失败');
-  }
-  return result.data;
+  const result = await createTaleServerAppClient().cms.setFilePreviewImage(
+    fileId,
+    imageFile
+  )
+  return { preview_image_url: result.previewImageUrl ?? '' }
 }

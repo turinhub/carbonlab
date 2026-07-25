@@ -1,222 +1,126 @@
-import { appTokenService } from '@/lib/services/app-token-service';
+'use server'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_TALE_BACKEND_URL || 'https://api.turingue.com';
+import type { FileType, Folder as SdkFolder } from '@turinhub/tale-js-sdk'
+import { createTaleServerAppClient } from '@/lib/server/tale-client'
 
-// 资料库接口类型
 export interface Repository {
-  id: string;
-  appId: string;
-  folderName: string;
-  folderType: string[];
+  id: string
+  appId: string
+  folderName: string
+  folderType: string[]
   folderAttr?: {
-    icon: string;
-    color: string;
-  };
-  remark: string;
-  createdAt: string;
-  updatedAt: string;
+    icon: string
+    color: string
+  }
+  remark: string
+  createdAt: string
+  updatedAt: string
 }
 
-// API响应类型
 export interface RepositoriesResponse {
   data: {
-    total: number;
-    content: Repository[];
+    total: number
+    content: Repository[]
     pageable: {
-      sort: {
-        orders: Array<{
-          direction: string;
-          property: string;
-          ignoreCase: boolean;
-          nullHandling: string;
-        }>;
-      };
-      pageNumber: number;
-      pageSize: number;
-    };
-  };
-  code: number;
-  msg: string;
-}
-
-// 查询参数类型
-export interface RepositoriesQueryParams {
-  page?: number;
-  size?: number;
-  sortBy?: string;
-  keyword?: string;
-}
-
-// 创建资料库请求类型
-export interface CreateRepositoryRequest {
-  folderName: string;
-  folderType: string[];
-  remark?: string;
-  folderAttr?: object;
-}
-
-// 更新资料库请求类型
-export interface UpdateRepositoryRequest {
-  folderName: string;
-  folderType: string[];
-  remark?: string;
-  folderAttr: object;
-}
-
-// 获取资料库列表
-export async function getRepositories(
-  params?: RepositoriesQueryParams,
-  appKey?: string
-): Promise<RepositoriesResponse> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const queryParams = new URLSearchParams();
-  if (params?.page !== undefined) queryParams.append('page', params.page.toString());
-  if (params?.size !== undefined) queryParams.append('size', params.size.toString());
-  if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params?.keyword) queryParams.append('keyword', params.keyword);
-
-  const response = await fetch(
-    `${API_BASE_URL}/cms/folder/page?${queryParams}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-t-token': appToken,
-      },
+      sort: { orders: unknown[] }
+      pageNumber: number
+      pageSize: number
     }
-  );
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
   }
-
-  const result = await response.json();
-  return result;
+  code: number
+  msg: string
 }
 
-// 创建资料库
-export async function createRepository(
-  data: CreateRepositoryRequest,
-  appKey?: string
-): Promise<Repository> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
+export interface RepositoriesQueryParams {
+  page?: number
+  size?: number
+  sortBy?: string
+  keyword?: string
+}
 
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
+export interface CreateRepositoryRequest {
+  folderName: string
+  folderType: string[]
+  remark?: string
+  folderAttr?: object
+}
 
-  const response = await fetch(`${API_BASE_URL}/cms/folder/createFolder`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
+export interface UpdateRepositoryRequest {
+  folderName: string
+  folderType: string[]
+  remark?: string
+  folderAttr: object
+}
+
+function toRepository(folder: SdkFolder): Repository {
+  return {
+    id: folder.id,
+    appId: folder.appKey,
+    folderName: folder.folderName,
+    folderType: folder.folderType,
+    folderAttr: folder.folderAttr as Repository['folderAttr'],
+    remark: folder.remark ?? '',
+    createdAt: folder.createdAt,
+    updatedAt: folder.updatedAt,
+  }
+}
+
+export async function getRepositories(
+  params?: RepositoriesQueryParams
+): Promise<RepositoriesResponse> {
+  const result = await createTaleServerAppClient().cms.listFolders({
+    page: params?.page,
+    size: params?.size,
+    sort: params?.sortBy,
+  })
+  return {
+    data: {
+      total: result.total,
+      content: result.content.map(toRepository),
+      pageable: {
+        sort: { orders: result.sort },
+        pageNumber: result.page,
+        pageSize: result.size,
+      },
     },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    code: 200,
+    msg: 'OK',
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
-// 更新资料库
+export async function createRepository(
+  data: CreateRepositoryRequest
+): Promise<Repository> {
+  const result = await createTaleServerAppClient().cms.createFolder({
+    folderName: data.folderName,
+    folderType: data.folderType as FileType[],
+    folderAttr: data.folderAttr as Record<string, unknown> | undefined,
+    remark: data.remark,
+  })
+  return toRepository(result)
+}
+
 export async function updateRepository(
   id: string,
-  data: UpdateRepositoryRequest,
-  appKey?: string
+  data: UpdateRepositoryRequest
 ): Promise<Repository> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  // 使用正确的 API 路径：/cms/folder/updateFolder/{id}
-  const response = await fetch(`${API_BASE_URL}/cms/folder/updateFolder/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-t-token': appToken,
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
+  const result = await createTaleServerAppClient().cms.updateFolder(id, {
+    folderName: data.folderName,
+    folderType: data.folderType as FileType[],
+    folderAttr: data.folderAttr as Record<string, unknown>,
+    remark: data.remark,
+  })
+  return toRepository(result)
 }
 
-// 删除资料库
 export async function deleteRepository(
-  id: string,
-  appKey?: string
+  id: string
 ): Promise<void> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/folder/deleteFolder/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  await createTaleServerAppClient().cms.deleteFolder(id)
 }
 
-// 获取资料库详情
 export async function getRepository(
-  id: string,
-  appKey?: string
+  id: string
 ): Promise<Repository> {
-  if (!appKey) {
-    throw new Error('No app key provided');
-  }
-
-  const appToken = await appTokenService.getValidAppToken(appKey);
-  if (!appToken) {
-    throw new Error('No valid app token');
-  }
-
-  const response = await fetch(`${API_BASE_URL}/cms/folder/getFolderById/${id}`, {
-    method: 'GET',
-    headers: {
-      'x-t-token': appToken,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.data;
+  return toRepository(await createTaleServerAppClient().cms.getFolder(id))
 }

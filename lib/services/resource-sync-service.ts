@@ -17,7 +17,6 @@ import {
   UpdateFileRequest,
   FileData
 } from '@/lib/api/files';
-import { enhancedAppTokenService } from '@/lib/services/enhanced-app-token-service';
 
 // 本地资源库接口
 export interface LocalRepository {
@@ -51,12 +50,6 @@ export interface SyncResult {
 
 // 资源同步服务
 export class ResourceSyncService {
-  private appKey: string;
-
-  constructor(appKey: string) {
-    this.appKey = appKey;
-  }
-
   /**
    * 同步单个资源库到 Tale 平台
    */
@@ -154,7 +147,7 @@ export class ResourceSyncService {
       console.log('🔍 验证远程资源库是否存在:', actualTaleId);
       
       // 尝试获取资源库详情
-      await getRepository(actualTaleId, this.appKey);
+      await getRepository(actualTaleId);
       console.log('✅ 远程资源库存在');
       return true;
     } catch (error) {
@@ -176,9 +169,9 @@ export class ResourceSyncService {
       };
 
       console.log('📝 创建资源库数据:', repositoryData);
-      console.log('🔑 使用 App Key:', this.appKey);
+      console.log('🔑 使用 App Key:');
 
-      const createdRepository = await createRepository(repositoryData, this.appKey);
+      const createdRepository = await createRepository(repositoryData);
       console.log('✅ 资源库创建成功:', createdRepository);
 
       return {
@@ -196,8 +189,8 @@ export class ResourceSyncService {
       // 提供更详细的错误信息
       let errorMessage = '创建资源库失败';
       if (error instanceof Error) {
-        if (error.message.includes('No app key provided')) {
-          errorMessage = '缺少应用密钥，请检查配置';
+        if (error.message.includes('Missing required server environment variables')) {
+          errorMessage = 'Tale 服务端凭据缺失，请检查部署配置';
         } else if (error.message.includes('No valid app token')) {
           errorMessage = '应用令牌无效或已过期，请重新获取';
         } else if (error.message.includes('HTTP error! status: 401')) {
@@ -250,7 +243,7 @@ export class ResourceSyncService {
       console.log('📝 更新资源库数据:', repositoryData);
       console.log('🔑 使用修复后的 Tale ID:', actualTaleId);
 
-      const updatedRepository = await updateRepository(actualTaleId, repositoryData, this.appKey);
+      const updatedRepository = await updateRepository(actualTaleId, repositoryData);
       console.log('✅ 资源库更新成功:', updatedRepository);
 
       return {
@@ -278,7 +271,7 @@ export class ResourceSyncService {
     try {
       console.log('🗑️ 删除资源库:', taleFolderId);
       
-      await deleteRepository(taleFolderId, this.appKey);
+      await deleteRepository(taleFolderId);
       
       return {
         success: true,
@@ -474,17 +467,8 @@ export class ResourceSyncService {
   private async getAllTaleRepositories(): Promise<Repository[]> {
     try {
       console.log('🔄 开始获取 Tale 平台资源库列表...');
-      console.log('🔑 使用 App Key:', this.appKey);
       
-      // 使用增强的认证服务
-      const token = await enhancedAppTokenService.getValidAppToken(this.appKey);
-      if (!token) {
-        throw new Error('无法获取有效的认证令牌');
-      }
-      
-      console.log('✅ 认证令牌获取成功，开始调用 API...');
-      
-      const response = await getRepositories({ page: 0, size: 1000 }, this.appKey);
+      const response = await getRepositories({ page: 0, size: 1000 });
       console.log('✅ 成功获取资源库列表:', response.data.content?.length || 0, '个资源库');
       
       return response.data.content || [];
@@ -493,8 +477,8 @@ export class ResourceSyncService {
       
       // 提供更详细的错误信息
       if (error instanceof Error) {
-        if (error.message.includes('No app key provided')) {
-          console.error('❌ 缺少应用密钥');
+        if (error.message.includes('Missing required server environment variables')) {
+          console.error('❌ Tale 服务端凭据缺失');
         } else if (error.message.includes('No valid app token')) {
           console.error('❌ 应用令牌无效或已过期');
         } else if (error.message.includes('HTTP error! status: 401')) {
@@ -687,7 +671,7 @@ export class ResourceSyncService {
           // 删除现有文件，然后创建新文件（因为updateFile API不存在）
           console.log('🗑️ 删除现有文件:', processedFileName, 'ID:', existingFile.id);
           try {
-            await deleteFile(existingFile.id, this.appKey);
+            await deleteFile(existingFile.id);
             console.log('✅ 文件删除成功:', localFile.fileName);
           } catch (deleteError) {
             console.warn('⚠️ 文件删除失败，继续创建新文件:', deleteError);
@@ -709,7 +693,7 @@ export class ResourceSyncService {
           remark: localFile.description || localFile.remark || `来自 ${repository.folderName} 的文件`
         };
 
-        const createdFile = await createFile(fileData, this.appKey);
+        const createdFile = await createFile(fileData);
         
         fileResults.push({
           fileName: localFile.fileName,
@@ -752,7 +736,7 @@ export class ResourceSyncService {
   private async getRemoteFiles(taleFolderId: string): Promise<any[]> {
     try {
       console.log('📥 获取远程文件列表:', taleFolderId);
-      const response = await getFiles({ folder_id: taleFolderId, page: 0, size: 1000 }, this.appKey);
+      const response = await getFiles({ folder_id: taleFolderId, page: 0, size: 1000 });
       return response.data.content || [];
     } catch (error) {
       console.error('获取远程文件失败:', error);
@@ -980,4 +964,4 @@ export class ResourceSyncService {
 }
 
 // 创建默认实例
-export const resourceSyncService = new ResourceSyncService('oa_HBamFxnA');
+export const resourceSyncService = new ResourceSyncService();

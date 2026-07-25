@@ -48,8 +48,7 @@ import { truncateDocumentTitle } from '@/lib/utils/text';
 
 // 获取预签名URL的异步函数
 const getPresignedFileUrl = async (
-  fileData: FileData,
-  appKey: string
+  fileData: FileData
 ): Promise<string | null> => {
   if (!fileData.oss_url) {
     return null;
@@ -63,7 +62,7 @@ const getPresignedFileUrl = async (
   try {
     // 直接调用后端 API 获取预签名 URL
     const { getFilePresignedUrl } = await import('@/lib/api/files');
-    const response = await getFilePresignedUrl(fileData.id, appKey);
+    const response = await getFilePresignedUrl(fileData.id);
     return response.presigned_url;
   } catch (error) {
     console.error('获取预签名URL失败:', error);
@@ -204,7 +203,6 @@ export default function FileViewerPage() {
 
   const fileId = params.fileId as string;
   const folderId = params.folderId as string;
-  const appKey = process.env.NEXT_PUBLIC_TALE_APP_KEY || 'oa_HBamFxnA';
   const [fileData, setFileData] = useState<FileData | null>(null);
   const [folderData, setFolderData] = useState<Folder | null>(null);
   const [loading, setLoading] = useState(true);
@@ -221,16 +219,13 @@ export default function FileViewerPage() {
       setLoading(true);
       setError(null);
 
-      const file = await getFileById(fileId, appKey);
+      const file = await getFileById(fileId);
       setFileData(file);
 
       // 如果文件有oss_url，获取预签名URL
       if (file.oss_url && !file.oss_url.startsWith('http')) {
         try {
-          const presignedUrl = await getPresignedFileUrl(
-            file,
-            appKey
-          );
+          const presignedUrl = await getPresignedFileUrl(file);
           if (presignedUrl) {
             setPresignedUrls(prev => ({
               ...prev,
@@ -246,10 +241,7 @@ export default function FileViewerPage() {
       // 获取资料库信息
       if (file.folder_id) {
         try {
-          const folder = await getFolderById(
-            file.folder_id,
-            appKey
-          );
+          const folder = await getFolderById(file.folder_id);
           setFolderData(folder);
         } catch (folderErr) {
           console.error('获取资料库信息失败:', folderErr);
@@ -262,7 +254,7 @@ export default function FileViewerPage() {
     } finally {
       setLoading(false);
     }
-  }, [fileId, appKey]);
+  }, [fileId]);
 
   useEffect(() => {
     if (fileId) {

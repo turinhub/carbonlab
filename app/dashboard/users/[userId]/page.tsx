@@ -15,7 +15,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { toast } from "sonner"
 import { getUserDetail } from "@/lib/api/users"
-import { API_CONFIG } from "@/lib/config/api"
 
 // 用户详情页面
 export default function UserDetailPage() {
@@ -35,9 +34,7 @@ export default function UserDetailPage() {
       setError(null)
       console.log('=== 开始获取用户详情 ===')
       console.log('用户ID:', userId)
-      console.log('使用的APP_KEY:', API_CONFIG.APP.APP_KEY)
-      
-      const response = await getUserDetail(userId, API_CONFIG.APP.APP_KEY)
+      const response = await getUserDetail(userId)
       console.log('用户详情API响应:', response)
       
       if (response.data) {
@@ -183,7 +180,6 @@ export default function UserDetailPage() {
             <CardContent className="text-sm text-yellow-700">
               <div className="space-y-2">
                 <div>用户ID: {userId}</div>
-                <div>APP_KEY: {API_CONFIG.APP.APP_KEY}</div>
                 <div>加载状态: {loading ? '加载中' : '完成'}</div>
                 <div>错误状态: {error ? '有错误' : '无错误'}</div>
                 <div>用户数据: {userDetail ? '已加载' : '未加载'}</div>

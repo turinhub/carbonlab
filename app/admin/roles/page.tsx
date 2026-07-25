@@ -55,7 +55,7 @@ export default function RolesManagementPage() {
       const response = await getRoles({
         page: currentPage,
         size: pageSize
-      }, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+      })
       
       setRoles(response.data.content)
       setTotalRoles(response.data.total)
@@ -84,7 +84,7 @@ export default function RolesManagementPage() {
         return
       }
 
-      await createRole(createForm, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+      await createRole(createForm)
       toast.success('角色创建成功')
       setCreateDialogOpen(false)
       setCreateForm({ role_name: '', role_type: '', remark: '' })
@@ -121,7 +121,7 @@ export default function RolesManagementPage() {
         return
       }
 
-      await updateRole(selectedRole.role_id, editForm, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+      await updateRole(selectedRole.role_id, editForm)
       toast.success('角色更新成功')
       setEditDialogOpen(false)
       fetchRoles()
@@ -138,7 +138,7 @@ export default function RolesManagementPage() {
     }
 
     try {
-      await deleteRole(roleId, process.env.NEXT_PUBLIC_TALE_APP_KEY)
+      await deleteRole(roleId)
       toast.success('角色删除成功')
       fetchRoles()
     } catch (error) {

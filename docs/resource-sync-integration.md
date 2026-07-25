@@ -124,10 +124,13 @@ await resourceSyncService.checkDataConsistency();
 ## 配置说明
 
 ### 1. API 配置
-```typescript
-const API_BASE_URL = process.env.NEXT_PUBLIC_TALE_BACKEND_URL || 'https://api.turingue.com';
-const APP_KEY = 'oa_HBamFxnA'; // 应用密钥
+```bash
+TALE_BASE_URL=https://api.turingue.com
+TALE_APP_KEY=oa_example
+TALE_APP_SECRET=<server-only-secret>
 ```
+
+同步调用统一经过 Server Action，浏览器不读取或传递 Tale App Key。
 
 ### 2. 同步配置
 - 批量同步延迟：500ms（避免 API 限制）
